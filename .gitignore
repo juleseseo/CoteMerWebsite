@@ -1,0 +1,35 @@
+/.idea/
+/app/sql/
+/conf/
+/logs/
+# Ne pas versionner WordPress core
+wp-admin/
+wp-includes/
+readme.html
+license.txt
+wp-config-sample.php
+
+# Fichiers sensibles ou spécifiques
+wp-config.php
+*.log
+*.sql
+*.tar
+*.zip
+*.gz
+
+# Uploads : si vous ne voulez pas tout versionner
+wp-content/uploads/
+
+# Caches, OS & IDE
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+node_modules/
+vendor/
+
+# Local WP et environnement
+local.sql
+.env
+.vscode/
+.idea/
