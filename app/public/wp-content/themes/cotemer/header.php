@@ -29,8 +29,9 @@
         <nav class="main-nav" id="main-nav">
             <ul class="nav-list">
                 <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#about">Présentation</a> </li>
                 <li><a href="#menu">Menu</a></li>
-                <li><a href="#a-propos">À propos</a></li>
+                <li><a href="#galerie">Galerie</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
