@@ -1,21 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Footer styles */
+    footer {
+      background-color: #060C64; /* Primary color from logo */
+      color: #FFFFFF;
+      padding: 40px 20px;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      width: 100%;
+      position: relative;
+      bottom: 0;
+    }
 
-<script>
-    // Burger menu
-    document.getElementById("burger").addEventListener("click", function() {
-        document.getElementById("main-nav").classList.toggle("active");
-    });
+    .footer-section {
+      margin-bottom: 20px;
+    }
 
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function(e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute("href")).scrollIntoView({
-                behavior: "smooth"
-            });
-            document.getElementById("main-nav").classList.remove("active"); // Ferme le menu mobile
-        });
-    });
-</script>
+    .footer-section h3 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      color: #F5F5F5; /* Slightly lighter for contrast */
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .footer-section p {
+      margin: 5px 0;
+      font-size: 1em;
+      line-height: 1.6;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding-top: 15px;
+      font-size: 0.9em;
+      color: #D3D3D3;
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+      .footer-section h3 {
+        font-size: 1.2em;
+      }
+
+      .footer-section p {
+        font-size: 0.9em;
+      }
+
+      .footer-bottom {
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
 <footer>
   <div class="footer-section">
     <h3>Contact</h3>
@@ -29,3 +71,5 @@
     <p>© 2025 Côté Mer – Tous droits réservés</p>
   </div>
 </footer>
+</body>
+</html>
