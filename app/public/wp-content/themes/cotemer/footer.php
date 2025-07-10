@@ -75,7 +75,6 @@
 </footer>
 
 <script>
-  // Set the current year dynamically
   document.getElementById('current-year').textContent = new Date().getFullYear();
 </script>
 </body>
