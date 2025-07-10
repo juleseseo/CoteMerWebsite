@@ -68,14 +68,13 @@
     <p>France</p>
     <p>📞 +33 2 97 53 63 67</p>
   </div>
-
   <div class="footer-bottom">
     <p>© <span id="current-year"></span> Côté Mer – Tous droits réservés</p>
   </div>
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
 </footer>
 
-<script>
-  document.getElementById('current-year').textContent = new Date().getFullYear();
-</script>
 </body>
 </html>
