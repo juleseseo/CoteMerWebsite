@@ -36,5 +36,17 @@
             </ul>
         </nav>
 
+        <?php
+        if ( function_exists( 'pll_the_languages' ) ) {
+            pll_the_languages( array(
+                'dropdown' => 1,           // Affiche un select dropdown (plus compact)
+                'show_flags' => 1,         // Montre le drapeau
+                'show_names' => 1,         // Montre le nom de la langue
+                'hide_if_no_translation' => 1
+            ) );
+        }
+        ?>
+
+
     </div>
 </header>

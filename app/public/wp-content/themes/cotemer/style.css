@@ -47,6 +47,29 @@ body {
     justify-content: center;
     width: 100%;
 }
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+.language-switcher a {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.language-switcher a:hover {
+    transform: scale(1.1);
+}
+
+.language-switcher img {
+    width: 24px;
+    height: auto;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
 
 .nav-list {
     list-style: none;
@@ -159,5 +182,10 @@ body {
     .nav-list li a {
         font-size: 20px;
         padding: 10px 25px;
+    }
+
+    .language-switcher {
+        margin-top: 15px;
+        justify-content: center;
     }
 }
