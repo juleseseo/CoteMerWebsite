@@ -61,16 +61,11 @@
 </head>
 <body>
 <footer>
-  <div class="footer-section">
-    <h3>Contact</h3>
-    <p>20 RUE DU GENERAL DE GAULLE</p>
-    <p>56640 ARZON</p>
-    <p>France</p>
-    <p>📞 +33 2 97 53 63 67</p>
-  </div>
-  <div class="footer-bottom">
-    <p>© <span id="current-year"></span> Côté Mer – Tous droits réservés</p>
-  </div>
+    <div class="footer-section">
+        <h3>Contact</h3>
+        <p><?php echo get_theme_mod('cotemer_footer_address', '20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France'); ?></p>
+        <p>📞 <?php echo get_theme_mod('cotemer_footer_phone', '+33 2 97 53 63 67'); ?></p>
+    </div>
   <script>
     document.getElementById('current-year').textContent = new Date().getFullYear();
   </script>
