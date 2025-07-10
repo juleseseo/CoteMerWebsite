@@ -5,7 +5,6 @@ Description: Thème personnalisé pour le restaurant
 Version: 1.0
 */
 
-
 /* ========== HEADER ========== */
 
 #site-header {
@@ -19,7 +18,7 @@ Version: 1.0
 
 .header-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     padding: 15px 30px;
     max-width: 1200px;
@@ -28,10 +27,13 @@ Version: 1.0
 
 .logo img {
     height: 60px;
+    margin-bottom: 10px;
 }
 
 .main-nav {
     display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .nav-list {
@@ -44,13 +46,14 @@ Version: 1.0
 
 .nav-list li a {
     text-decoration: none;
-    color: #333;
+    color: #060C64;
     font-weight: bold;
     transition: color 0.3s;
+    font-size: 18px;
 }
 
 .nav-list li a:hover {
-    color: #e63946;
+    color: #e63946; /* ou un bleu plus clair si tu veux rester dans le thème */
 }
 
 /* ========== BURGER MENU (mobile) ========== */
@@ -60,13 +63,14 @@ Version: 1.0
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 .burger span {
     display: block;
     width: 25px;
     height: 3px;
-    background-color: #333;
+    background-color: #060C64;
 }
 
 /* ========== RESPONSIVE ========== */
@@ -76,12 +80,13 @@ Version: 1.0
         display: none;
         flex-direction: column;
         position: absolute;
-        top: 80px;
+        top: 100px;
         right: 30px;
         background: white;
         border: 1px solid #ccc;
         padding: 20px;
         z-index: 1000;
+        align-items: center;
     }
 
     .main-nav.active {
@@ -90,5 +95,10 @@ Version: 1.0
 
     .burger {
         display: flex;
+    }
+
+    .nav-list {
+        flex-direction: column;
+        gap: 20px;
     }
 }
