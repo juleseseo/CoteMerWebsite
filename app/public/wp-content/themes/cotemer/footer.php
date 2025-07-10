@@ -12,6 +12,8 @@
       font-family: 'Arial', sans-serif;
       text-align: center;
       width: 100%;
+      margin: 0; /* Ensure no margins interfere */
+      box-sizing: border-box; /* Include padding in width calculation */
       position: relative;
       bottom: 0;
     }
@@ -68,8 +70,13 @@
   </div>
 
   <div class="footer-bottom">
-    <p>© 2025 Côté Mer – Tous droits réservés</p>
+    <p>© <span id="current-year"></span> Côté Mer – Tous droits réservés</p>
   </div>
 </footer>
+
+<script>
+  // Set the current year dynamically
+  document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
