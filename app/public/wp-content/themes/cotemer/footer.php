@@ -1,32 +1,31 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 <footer>
     <div class="footer-column">
-        <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo.png" alt="Logo du restaurant">
+        <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo.png" alt="Logo <?php bloginfo('name'); ?>">
+        <p>Restaurant de fruits de mer</p>
     </div>
 
     <div class="footer-column">
         <h3>Contact</h3>
-        <p>
-            📍
+        <p>📍
             <a href="https://www.google.com/maps/place/20+Rue+du+G%C3%A9n%C3%A9ral+de+Gaulle,+56640+Arzon,+France" target="_blank">
                 <?php echo get_theme_mod('cotemer_footer_address', '20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France'); ?>
             </a>
         </p>
         <p>📞
-            <a href="tel:<?php echo get_theme_mod('cotemer_footer_phone', '+33 2 97 53 63 67'); ?>">
+            <a href="tel:<?php echo str_replace(' ', '', get_theme_mod('cotemer_footer_phone', '+33297536367')); ?>">
                 <?php echo get_theme_mod('cotemer_footer_phone', '+33 2 97 53 63 67'); ?>
             </a>
         </p>
         <p>✉️
             <a href="mailto:contact@cotemer.fr">contact@cotemer.fr</a>
         </p>
+    </div>
+
+    <div class="footer-column">
+        <h3>Horaires</h3>
+        <p>Mardi - Dimanche</p>
+        <p>12h - 14h • 19h - 22h</p>
+        <p>Fermé le lundi</p>
     </div>
 
     <div class="footer-column">
@@ -42,12 +41,10 @@
     </div>
 
     <div class="footer-bottom">
-        <p>© <span id="current-year"></span> Côté Mer – Tous droits réservés</p>
+        <p>&copy; <span id="current-year"></span> <?php bloginfo('name'); ?> – Tous droits réservés</p>
     </div>
 </footer>
 
-<script>
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-</script>
+<?php wp_footer(); ?>
 </body>
 </html>
