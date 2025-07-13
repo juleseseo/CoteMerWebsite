@@ -5,6 +5,9 @@ function cotemer_enqueue_styles() {
 }
 add_action('wp_enqueue_scripts', 'cotemer_enqueue_styles');
 
+
+
+
 function cotemer_customize_register($wp_customize) {
     // Section Footer
     $wp_customize->add_section('cotemer_footer_section', array(

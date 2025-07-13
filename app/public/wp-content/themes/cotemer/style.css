@@ -1,5 +1,6 @@
 /*
 Theme Name: cotemer
+Theme URI: http://cote-mer.local
 Author: Jules
 Description: Thème personnalisé pour le restaurant
 Version: 1.0
@@ -141,11 +142,9 @@ body {
 .burger.active span:nth-child(1) {
     transform: translateY(8px) rotate(45deg);
 }
-
 .burger.active span:nth-child(2) {
     opacity: 0;
 }
-
 .burger.active span:nth-child(3) {
     transform: translateY(-8px) rotate(-45deg);
 }
@@ -339,6 +338,7 @@ footer {
 .footer-column img {
     max-width: 120px;
     margin-bottom: 15px;
+    filter: none; /* Suppression de l'ombre */
 }
 
 .footer-column h3 {
@@ -362,6 +362,7 @@ footer {
 .footer-column a:hover {
     color: #4cc9f0;
     text-decoration: underline;
+    font-weight: bold;
 }
 
 .social-icons a {
