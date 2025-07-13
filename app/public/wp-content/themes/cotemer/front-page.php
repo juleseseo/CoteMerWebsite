@@ -50,12 +50,7 @@
     </p>
   </div>
 </section>
-    <!-- Hero / Slider -->
-    <section id="hero">
-        <h1>Bienvenue chez Côté Mer</h1>
-        <p>Votre restaurant de fruits de mer préféré face au golfe du Morbihan.</p>
-        <a href="#menu">Voir la carte</a>
-    </section>
+
 
     <!-- Menu -->
     <section id="menu">
