@@ -21,37 +21,37 @@
     z-index: 1;
   "></div>
 
-    <!-- Contenu texte -->
-    <div class="banner-content" style="
+  <div class="banner-content" style="
     position: relative;
     z-index: 2;
     text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
     max-width: 90%;
-    padding-top: 20px;
+    padding-top: 20px; /* Ajout optionnel pour descendre un peu le contenu */
   ">
-        <h1 style="
+    <h1 style="
       font-size: 3.2rem;
       margin-bottom: 1rem;
       font-weight: 700;
     ">
-            Bienvenue chez Côté Mer
-        </h1>
-        <p style="
+      Bienvenue chez Côté Mer
+    </h1>
+    <p style="
       font-size: 1.7rem;
       margin-bottom: 1.5rem;
       font-weight: 500;
     ">
-            Venez découvrir nos plats en bord de mer
-        </p>
-        <p style="
+      Venez découvrir nos plats en bord de mer
+    </p>
+    <p style="
       font-size: 1.2rem;
       margin-bottom: 1.5rem;
       font-weight: 500;
     ">
-            Aujourd'hui nous sommes ouverts jusqu'à
-        </p>
-    </div>
+      Aujourd'hui nous sommes ouverts jusqu'à
+    </p>
+  </div>
 </section>
+
 
     <!-- Menu -->
     <section id="menu">
@@ -118,7 +118,7 @@
             if ($about_page) {
                 echo apply_filters('the_content', $about_page->post_content);
             } else {
-                echo '<p>Restaurant familial depuis 1985, Côté Mer vous accueille dans un cadre chaleureux avec vue imprenable sur le golfe du Morbihan. </p>';
+                echo '<p>Restaurant familial depuis 1985, Côté Mer vous accueille dans un cadre chaleureux avec vue imprenable sur le golfe du Morbihan.</p>';
             }
             ?>
         </div>

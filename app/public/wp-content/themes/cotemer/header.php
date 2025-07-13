@@ -28,7 +28,7 @@
         <!-- Navigation -->
         <nav class="main-nav" id="main-nav">
             <ul class="nav-list">
-                <li><a href="#hero">Accueil</a></li>
+                <li><a href="#accueil">Accueil</a></li>
                 <li><a href="#menu">Menu</a></li>
                 <li><a href="#gallery">Galerie</a></li>
                 <li><a href="#about">À propos</a></li>
