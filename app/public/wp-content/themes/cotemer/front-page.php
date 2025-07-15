@@ -1,19 +1,19 @@
 <?php get_header(); ?>
 
-<section id="accueil" style="
-        position: relative;
-        padding-top: 150px;
-        background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/vue.jpg');
-        background-size: cover;
-        background-position: center;
-        height: 500px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        text-align: center;
-        ">
-    <div style="
+<section id="banner" style="
+  position: relative;
+  padding-top: 150px;
+  background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/vue.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  ">
+  <div style="
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
@@ -100,29 +100,51 @@
         </div>
     </section>
 
-<!-- Menu -->
-<section id="menu">
-  <h2>Notre carte</h2>
-  <?php
-  $menu_page = get_page_by_path('menu');
-  echo apply_filters('the_content', $menu_page->post_content);
-  ?>
+<!-- A propos -->
+<section id="about">
+  <h2>À propos</h2>
+  <div class="about-container">
+    <?php
+    $about_page = get_page_by_path('a-propos');
+    if ($about_page) {
+      echo apply_filters('the_content', $about_page->post_content);
+    } else {
+      ?>
+      <div class="about-block">
+        <div class="about-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/hormard_mer.jpg');"></div>
+        <div class="about-content">
+          <h3>Des Produits d'Excellence</h3>
+          <p>
+            Nous travaillons exclusivement avec des produits frais, de saison et essentiellement français sélectionnés avec soin auprès de producteurs locaux et artisans passionnés. Notre chef revisite la gastronomie bretonne avec une touche créative, mêlant tradition et modernité.
+          </p>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="about-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/homard.jpg');"></div>
+        <div class="about-content">
+          <h3>Une Cuisine Inspirée</h3>
+          <p>
+            Au cœur de Port Navalo, à l'entrée majestueuse du Golfe du Morbihan, notre restaurant bistronomique vous invite à une expérience culinaire authentique. Ici, chaque assiette célèbre les saveurs de la mer et du terroir français, dans un cadre d'exception avec une vue imprenable sur la mer.
+          </p>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="about-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/huitre.jpg');"></div>
+        <div class="about-content">
+          <h3>Des Saveurs Authentiques</h3>
+          <p>
+            Chaque bouchée révèle la richesse de notre terroir et la passion de notre équipe. Des huîtres fraîches aux plats les plus sophistiqués, nous mettons tout en œuvre pour vous offrir une expérience gustative inoubliable.
+          </p>
+        </div>
+      </div>
+      <?php
+    }
+    ?>
+  </div>
 </section>
 
-    <!-- À propos -->
-    <section id="about">
-        <h2>À propos</h2>
-        <div class="section-content">
-            <?php
-            $about_page = get_page_by_path('a-propos');
-            if ($about_page) {
-                echo apply_filters('the_content', $about_page->post_content);
-            } else {
-                echo '<p>Restaurant familial depuis 1985, Côté Mer vous accueille dans un cadre chaleureux avec vue imprenable sur le golfe du Morbihan.</p>';
-            }
-            ?>
-        </div>
-    </section>
+
+
 
     <!-- Contact -->
     <section id="contact">
@@ -135,7 +157,7 @@
             } else {
                 echo '<p>📍 20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France</p>';
                 echo '<p>📞 +33 2 97 53 63 67</p>';
-                echo '<p>✉️ contact@cotemer.fr</p>';
+                echo '<p>✉️ cotemer.portnavalo@gmail.com</p>';
             }
             ?>
         </div>

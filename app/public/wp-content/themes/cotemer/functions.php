@@ -38,6 +38,29 @@ function cotemer_customize_register($wp_customize) {
         'section'  => 'cotemer_footer_section',
         'type'     => 'text',
     ));
+
+    // Mail
+  $wp_customize->add_setting('cotemer_footer_mail', array(
+    'default'   => 'cotemer.portnavalo@gmail.com',
+    'sanitize_callback' => 'sanitize_text_field',
+  ));
+
+  $wp_customize->add_control('cotemer_footer_mail', array(
+    'label'    => __('Mail', 'cotemer'),
+    'section'  => 'cotemer_footer_section',
+    'type'     => 'text',
+  ));
+
+  // Horaires
+  $wp_customize->add_setting('cotemer_footer_hours', array(
+    'default'   => 'Lundi - Samedi\n 9h - 21h30 \nFermé le dimanche',
+    'sanitize_callback' => 'sanitize_textarea_field',
+  ));
+  $wp_customize->add_control('cotemer_footer_hours', array(
+    'label'    => __('Horaires', 'cotemer'),
+    'section'  => 'cotemer_footer_section',
+    'type'     => 'textarea',
+  ));
 }
 add_action('customize_register', 'cotemer_customize_register');
 

@@ -17,16 +17,23 @@
             </a>
         </p>
         <p>✉️
-            <a href="mailto:contact@cotemer.fr">contact@cotemer.fr</a>
-        </p>
+          <a href="mailto:<?php echo antispambot(get_theme_mod('cotemer_footer_mail', 'cotemer.portnavalo@gmail.com')); ?>">
+            <?php echo antispambot(get_theme_mod('cotemer_footer_mail', 'cotemer.portnavalo@gmail.com')); ?>
+          </a>
+      </p>
     </div>
 
-    <div class="footer-column">
-        <h3>Horaires</h3>
-        <p>Mardi - Dimanche</p>
-        <p>12h - 14h • 19h - 22h</p>
-        <p>Fermé le lundi</p>
-    </div>
+  <div class="footer-column">
+    <h3>Horaires</h3>
+    <p>
+      <?php
+      echo nl2br(esc_html(get_theme_mod(
+        'cotemer_footer_hours',
+        "Lundi - Samedi : 9h - 21h30 \nFermé le dimanche"
+      )));
+      ?>
+    </p>
+  </div>
 
     <div class="footer-column">
         <h3>Nos réseaux sociaux</h3>
