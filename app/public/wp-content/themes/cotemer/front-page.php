@@ -102,46 +102,25 @@
 
 <!-- A propos -->
 <section id="about">
-  <h2>À propos</h2>
-  <div class="about-container">
-    <?php
-    $about_page = get_page_by_path('a-propos');
-    if ($about_page) {
-      echo apply_filters('the_content', $about_page->post_content);
-    } else {
-      ?>
-      <div class="about-block">
-        <div class="about-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/hormard_mer.jpg');"></div>
-        <div class="about-content">
-          <h3>Des Produits d'Excellence</h3>
-          <p>
-            Nous travaillons exclusivement avec des produits frais, de saison et essentiellement français sélectionnés avec soin auprès de producteurs locaux et artisans passionnés. Notre chef revisite la gastronomie bretonne avec une touche créative, mêlant tradition et modernité.
-          </p>
-        </div>
-      </div>
-      <div class="about-block">
-        <div class="about-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/homard.jpg');"></div>
-        <div class="about-content">
-          <h3>Une Cuisine Inspirée</h3>
-          <p>
-            Au cœur de Port Navalo, à l'entrée majestueuse du Golfe du Morbihan, notre restaurant bistronomique vous invite à une expérience culinaire authentique. Ici, chaque assiette célèbre les saveurs de la mer et du terroir français, dans un cadre d'exception avec une vue imprenable sur la mer.
-          </p>
-        </div>
-      </div>
-      <div class="about-block">
-        <div class="about-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/huitre.jpg');"></div>
-        <div class="about-content">
-          <h3>Des Saveurs Authentiques</h3>
-          <p>
-            Chaque bouchée révèle la richesse de notre terroir et la passion de notre équipe. Des huîtres fraîches aux plats les plus sophistiqués, nous mettons tout en œuvre pour vous offrir une expérience gustative inoubliable.
-          </p>
-        </div>
-      </div>
-      <?php
-    }
-    ?>
-  </div>
+    <h2>À propos</h2>
+    <div class="about-container">
+        <?php
+        for ($i = 1; $i <= 3; $i++) :
+            $title = get_theme_mod("cotemer_about_title_$i");
+            $text = get_theme_mod("cotemer_about_text_$i");
+            $image = get_theme_mod("cotemer_about_image_$i");
+            ?>
+            <div class="about-block">
+                <div class="about-image" style="background-image: url('<?php echo esc_url($image); ?>');"></div>
+                <div class="about-content">
+                    <h3><?php echo esc_html($title); ?></h3>
+                    <p><?php echo nl2br(esc_html($text)); ?></p>
+                </div>
+            </div>
+        <?php endfor; ?>
+    </div>
 </section>
+
 
 
 

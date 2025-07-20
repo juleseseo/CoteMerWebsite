@@ -61,6 +61,104 @@ function cotemer_customize_register($wp_customize) {
     'section'  => 'cotemer_footer_section',
     'type'     => 'textarea',
   ));
+
+    // Section "À propos"
+    $wp_customize->add_section('cotemer_about_section', array(
+        'title'    => __('Section À propos', 'cotemer'),
+        'priority' => 31,
+    ));
+
+// Bloc 1
+    $wp_customize->add_setting('cotemer_about_title_1', array(
+        'default' => 'Des Produits d\'Excellence',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_about_title_1', array(
+        'label'    => __('Titre bloc 1', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'text',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_text_1', array(
+        'default' => 'Nous travaillons exclusivement avec des produits frais, de saison...',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_about_text_1', array(
+        'label'    => __('Texte bloc 1', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'textarea',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_image_1', array(
+        'default' => get_template_directory_uri() . '/assets/img/hormard_mer.jpg',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'cotemer_about_image_1', array(
+        'label'    => __('Image bloc 1', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'settings' => 'cotemer_about_image_1',
+    )));
+
+    // Bloc 2
+    $wp_customize->add_setting('cotemer_about_title_2', array(
+        'default' => 'Des Produits d\'Excellence',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_about_title_2', array(
+        'label'    => __('Titre bloc 2', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'text',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_text_2', array(
+        'default' => 'Nous travaillons exclusivement avec des produits frais, de saison...',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_about_text_2', array(
+        'label'    => __('Texte bloc 2', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'textarea',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_image_2', array(
+        'default' => get_template_directory_uri() . '/assets/img/hormard_mer.jpg',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'cotemer_about_image_2', array(
+        'label'    => __('Image bloc 2', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'settings' => 'cotemer_about_image_2',
+    )));
+    // Bloc 3
+    $wp_customize->add_setting('cotemer_about_title_3', array(
+        'default' => 'Des Produits d\'Excellence',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_about_title_3', array(
+        'label'    => __('Titre bloc 3', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'text',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_text_3', array(
+        'default' => 'Nous travaillons exclusivement avec des produits frais, de saison...',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_about_text_3', array(
+        'label'    => __('Texte bloc 3', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'textarea',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_image_3', array(
+        'default' => get_template_directory_uri() . '/assets/img/hormard_mer.jpg',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'cotemer_about_image_3', array(
+        'label'    => __('Image bloc 3', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'settings' => 'cotemer_about_image_3',
+    )));
 }
 add_action('customize_register', 'cotemer_customize_register');
 
@@ -69,6 +167,11 @@ add_theme_support('post-thumbnails');
 
 // Support pour les menus
 add_theme_support('menus');
+
+
+
+// Répète ce bloc pour les blocs 2 et 3...
+
 
 // Nettoyage du head WordPress
 remove_action('wp_head', 'wp_generator');
