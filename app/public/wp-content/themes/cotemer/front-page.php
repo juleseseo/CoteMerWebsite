@@ -26,7 +26,7 @@
     z-index: 2;
     text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
     max-width: 90%;
-    padding-top: 20px; /* Ajout optionnel pour descendre un peu le contenu */
+    padding-top: 20px;
   ">
     <h1 style="
       font-size: 3.2rem;
@@ -54,21 +54,42 @@
 
 
     <!-- Menu -->
-    <section id="menu">
-        <h2>Notre carte</h2>
-        <div class="menu-content">
-            <?php
-            $menu_page = get_page_by_path('menu');
-            if ($menu_page) {
-                echo apply_filters('the_content', $menu_page->post_content);
-            } else {
-                echo '<p>Découvrez notre sélection de fruits de mer frais, nos poissons du jour et nos spécialités bretonnes préparées avec passion par notre chef.</p>';
-            }
-            ?>
+<section id="menu">
+  <h2>Notre carte</h2>
+  <div class="menu-grid">
+    <?php
+    $menus = new WP_Query(array(
+      'post_type' => 'menu_item',
+      'posts_per_page' => -1,
+      'orderby' => 'date',
+      'order' => 'DESC'
+    ));
+    if ($menus->have_posts()) :
+      while ($menus->have_posts()) : $menus->the_post();
+        $file_url = get_field('fichier_pdf'); // Si tu utilises ACF pour un champ PDF
+        ?>
+        <div class="menu-card">
+          <a href="<?php echo $file_url ? esc_url($file_url) : get_the_permalink(); ?>" target="_blank">
+            <?php if (has_post_thumbnail()) : ?>
+              <img src="<?php the_post_thumbnail_url('medium'); ?>" alt="<?php the_title_attribute(); ?>">
+            <?php else : ?>
+              <img src="<?php echo get_template_directory_uri(); ?>/assets/img/placeholder-menu.jpg" alt="Menu">
+            <?php endif; ?>
+            <h3><?php the_title(); ?></h3>
+          </a>
         </div>
-    </section>
+      <?php
+      endwhile;
+      wp_reset_postdata();
+    else :
+      echo '<p>Aucun menu disponible pour le moment.</p>';
+    endif;
+    ?>
+  </div>
+</section>
 
-    <!-- Galerie -->
+
+<!-- Galerie -->
     <section id="gallery">
         <h2>Galerie</h2>
         <div class="carousel-wrapper">
