@@ -35,11 +35,12 @@ function cotemer_customize_register($wp_customize) {
     'type'     => 'text',
   ));
 
-  // Mail
+    // Mail
   $wp_customize->add_setting('cotemer_footer_mail', array(
     'default'   => 'cotemer.portnavalo@gmail.com',
     'sanitize_callback' => 'sanitize_text_field',
   ));
+
   $wp_customize->add_control('cotemer_footer_mail', array(
     'label'    => __('Mail', 'cotemer'),
     'section'  => 'cotemer_footer_section',
@@ -57,30 +58,103 @@ function cotemer_customize_register($wp_customize) {
     'type'     => 'textarea',
   ));
 
-  $wp_customize->add_section('cotemer_menu_section', array(
-    'title'    => __('Cartes du restaurant', 'cotemer'),
-    'priority' => 30,
-  ));
+    // Section "À propos"
+    $wp_customize->add_section('cotemer_about_section', array(
+        'title'    => __('Section À propos', 'cotemer'),
+        'priority' => 31,
+    ));
 
-  // Ajout d'un champ pour l'URL de la carte (si vous souhaitez le gérer via le Customizer)
-  $wp_customize->add_setting('cotemer_menu_pdf_upload', array(
-    'sanitize_callback' => 'esc_url_raw', // sécurise l'URL du fichier
-  ));
-  $wp_customize->add_control(new WP_Customize_Upload_Control($wp_customize, 'cotemer_menu_pdf_upload', array(
-    'label'    => __('Télécharger le PDF de la carte', 'cotemer'),
-    'section'  => 'cotemer_menu_section',
-    'settings' => 'cotemer_menu_pdf_upload',
-  )));
+// Bloc 1
+    $wp_customize->add_setting('cotemer_about_title_1', array(
+        'default' => 'Des Produits d\'Excellence',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_about_title_1', array(
+        'label'    => __('Titre bloc 1', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'text',
+    ));
 
-  // Ajout d’un setting pour le titre du PDF
-  $wp_customize->add_setting('cotemer_menu_pdf_title', array(
-    'sanitize_callback' => 'sanitize_text_field',
-  ));
-  $wp_customize->add_control('cotemer_menu_pdf_title', array(
-    'label'    => __('Titre du PDF', 'cotemer'),
-    'section'  => 'cotemer_menu_section',
-    'type'     => 'text',
-  ));
+    $wp_customize->add_setting('cotemer_about_text_1', array(
+        'default' => 'Nous travaillons exclusivement avec des produits frais, de saison...',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_about_text_1', array(
+        'label'    => __('Texte bloc 1', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'textarea',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_image_1', array(
+        'default' => get_template_directory_uri() . '/assets/img/hormard_mer.jpg',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'cotemer_about_image_1', array(
+        'label'    => __('Image bloc 1', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'settings' => 'cotemer_about_image_1',
+    )));
+
+    // Bloc 2
+    $wp_customize->add_setting('cotemer_about_title_2', array(
+        'default' => 'Des Produits d\'Excellence',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_about_title_2', array(
+        'label'    => __('Titre bloc 2', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'text',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_text_2', array(
+        'default' => 'Nous travaillons exclusivement avec des produits frais, de saison...',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_about_text_2', array(
+        'label'    => __('Texte bloc 2', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'textarea',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_image_2', array(
+        'default' => get_template_directory_uri() . '/assets/img/hormard_mer.jpg',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'cotemer_about_image_2', array(
+        'label'    => __('Image bloc 2', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'settings' => 'cotemer_about_image_2',
+    )));
+    // Bloc 3
+    $wp_customize->add_setting('cotemer_about_title_3', array(
+        'default' => 'Des Produits d\'Excellence',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_about_title_3', array(
+        'label'    => __('Titre bloc 3', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'text',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_text_3', array(
+        'default' => 'Nous travaillons exclusivement avec des produits frais, de saison...',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_about_text_3', array(
+        'label'    => __('Texte bloc 3', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'type'     => 'textarea',
+    ));
+
+    $wp_customize->add_setting('cotemer_about_image_3', array(
+        'default' => get_template_directory_uri() . '/assets/img/hormard_mer.jpg',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'cotemer_about_image_3', array(
+        'label'    => __('Image bloc 3', 'cotemer'),
+        'section'  => 'cotemer_about_section',
+        'settings' => 'cotemer_about_image_3',
+    )));
 }
 function cotemer_register_menu_post_type() {
   $labels = array(
@@ -107,7 +181,6 @@ add_action('init', 'cotemer_register_menu_post_type');
 
 add_action('customize_register', 'cotemer_customize_register');
 
-
 // Support pour les images à la une
 add_theme_support('post-thumbnails');
 
@@ -118,7 +191,4 @@ add_theme_support('menus');
 remove_action('wp_head', 'wp_generator');
 remove_action('wp_head', 'wlwmanifest_link');
 remove_action('wp_head', 'rsd_link');
-
 ?>
-
-
