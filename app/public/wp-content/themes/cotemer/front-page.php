@@ -52,41 +52,65 @@
   </div>
 </section>
 
-
-    <!-- Menu -->
 <section id="menu">
   <h2>Notre carte</h2>
   <div class="menu-grid">
     <?php
-    $menus = new WP_Query(array(
-      'post_type' => 'menu_item',
-      'posts_per_page' => -1,
-      'orderby' => 'date',
-      'order' => 'DESC'
-    ));
-    if ($menus->have_posts()) :
-      while ($menus->have_posts()) : $menus->the_post();
-        $file_url = get_field('fichier_pdf'); // Si tu utilises ACF pour un champ PDF
-        ?>
-        <div class="menu-card">
-          <a href="<?php echo $file_url ? esc_url($file_url) : get_the_permalink(); ?>" target="_blank">
-            <?php if (has_post_thumbnail()) : ?>
-              <img src="<?php the_post_thumbnail_url('medium'); ?>" alt="<?php the_title_attribute(); ?>">
-            <?php else : ?>
-              <img src="<?php echo get_template_directory_uri(); ?>/assets/img/placeholder-menu.jpg" alt="Menu">
-            <?php endif; ?>
-            <h3><?php the_title(); ?></h3>
-          </a>
-        </div>
-      <?php
+    // Requête pour récupérer tous les menus du CPT 'restaurant_menu'
+    $args = array(
+      'post_type'      => 'restaurant_menu',
+      'posts_per_page' => -1, // Récupérer tous les menus
+      'orderby'        => 'title',
+      'order'          => 'ASC',
+    );
+    $menus = new WP_Query($args);
+
+    // Variable pour savoir si on a affiché quelque chose
+    $has_content = false;
+
+    if ($menus->have_posts()):
+      while ($menus->have_posts()): $menus->the_post();
+        $file_url = get_post_meta(get_the_ID(), '_cotemer_menu_file', true);
+        if ($file_url): ?>
+          <div class="menu-item">
+            <p><strong><?php the_title(); ?></strong></p>
+            <iframe src="https://docs.google.com/viewer?url=<?php echo esc_url($file_url); ?>&embedded=true"
+                    width="600"
+                    height="400"
+                    style="border: none;"></iframe>
+          </div>
+          <?php $has_content = true; ?>
+        <?php endif;
       endwhile;
       wp_reset_postdata();
-    else :
-      echo '<p>Aucun menu disponible pour le moment.</p>';
     endif;
-    ?>
+
+    // Ajouter aussi la carte du Customizer si présente
+    $customizer_pdf_url = get_theme_mod('cotemer_menu_pdf_upload');
+    $customizer_pdf_title = get_theme_mod('cotemer_menu_pdf_title');
+
+    if ($customizer_pdf_url): ?>
+      <div class="menu-item">
+        <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
+        <iframe src="https://docs.google.com/viewer?url=<?php echo esc_url($customizer_pdf_url); ?>&embedded=true"
+                width="600"
+                height="400"
+                style="border: none;"></iframe>
+      </div>
+      <?php $has_content = true; ?>
+    <?php endif;
+
+    // Si aucun contenu n’a été trouvé
+    if (!$has_content): ?>
+      <p>Aucune carte disponible pour le moment.</p>
+    <?php endif; ?>
   </div>
 </section>
+
+
+
+
+
 
 
 <!-- Galerie -->
