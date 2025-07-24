@@ -85,25 +85,24 @@
       wp_reset_postdata();
     endif;
 
-    // Ajouter aussi la carte du Customizer si présente
-    $customizer_pdf_url = get_theme_mod('cotemer_menu_pdf_upload');
-    $customizer_pdf_title = get_theme_mod('cotemer_menu_pdf_title');
+    $customizer_pdf_url = get_theme_mod('cotemer_menu_pdf');
+$customizer_pdf_title = get_theme_mod('cotemer_menu_title');
 
-    if ($customizer_pdf_url): ?>
-      <div class="menu-item">
-        <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
-        <iframe src="https://docs.google.com/viewer?url=<?php echo esc_url($customizer_pdf_url); ?>&embedded=true"
-                width="600"
-                height="400"
-                style="border: none;"></iframe>
-      </div>
-      <?php $has_content = true; ?>
-    <?php endif;
+if ($customizer_pdf_url):
+    $file_ext = strtolower(pathinfo($customizer_pdf_url, PATHINFO_EXTENSION));
+    ?>
+    <div class="menu-item">
+      <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
+      <?php if ($file_ext === 'pdf'): ?>
+        <iframe src="<?php echo esc_url($customizer_pdf_url); ?>" width="100%" height="600px" style="border: none;"></iframe>
+      <?php elseif (in_array($file_ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+        <img src="<?php echo esc_url($customizer_pdf_url); ?>" alt="<?php echo esc_attr($customizer_pdf_title); ?>" style="max-width:100%; height:auto;">
+      <?php else: ?>
+        <p>Format non supporté : <?php echo esc_html($file_ext); ?></p>
+      <?php endif; ?>
+    </div>
+<?php endif; ?>
 
-    // Si aucun contenu n’a été trouvé
-    if (!$has_content): ?>
-      <p>Aucune carte disponible pour le moment.</p>
-    <?php endif; ?>
   </div>
 </section>
 
@@ -120,24 +119,27 @@
             <button class="carousel-btn prev" id="prevBtn">&larr;</button>
             <div class="carousel" id="carousel">
                 <?php
-                $gallery_dir = get_template_directory() . '/assets/galerie/';
-                $gallery_url = get_template_directory_uri() . '/assets/galerie/';
+                $has_gallery = false;
+                for ($i = 1; $i <= 5; $i++) {
+                    $image = get_theme_mod("cotemer_gallery_image_$i");
+                    $caption = get_theme_mod("cotemer_gallery_caption_$i");
 
-                if (is_dir($gallery_dir)) {
-                    $files = glob($gallery_dir . '*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-
-                    if (!empty($files)) {
-                        foreach ($files as $file) {
-                            $filename = basename($file);
-                            $url = $gallery_url . $filename;
-                            echo '<div class="carousel-item"><img src="' . esc_url($url) . '" alt="Galerie ' . esc_attr($filename) . '"></div>';
+                    if ($image) {
+                        $has_gallery = true;
+                        echo '<div class="carousel-item">';
+                        echo '<img src="' . esc_url($image) . '" alt="' . esc_attr($caption) . '">';
+                        if ($caption) {
+                            echo '<p class="carousel-caption">' . esc_html($caption) . '</p>';
                         }
-                    } else {
-                        // Images par défaut si pas d'images trouvées
-                        echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder1.jpg" alt="Restaurant"></div>';
-                        echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder2.jpg" alt="Plats"></div>';
-                        echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder3.jpg" alt="Terrasse"></div>';
+                        echo '</div>';
                     }
+                }
+
+                // Fallback si aucune image ajoutée
+                if (!$has_gallery) {
+                    echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder1.jpg" alt="Restaurant"></div>';
+                    echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder2.jpg" alt="Plats"></div>';
+                    echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder3.jpg" alt="Terrasse"></div>';
                 }
                 ?>
             </div>

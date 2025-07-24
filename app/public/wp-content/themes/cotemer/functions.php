@@ -155,29 +155,63 @@ function cotemer_customize_register($wp_customize) {
         'section'  => 'cotemer_about_section',
         'settings' => 'cotemer_about_image_3',
     )));
-}
-function cotemer_register_menu_post_type() {
-  $labels = array(
-    'name'               => 'Cartes du restaurant',
-    'singular_name'      => 'Carte',
-    'menu_name'          => 'Cartes du restaurant',
-    'add_new'            => 'Ajouter une nouvelle carte',
-    'add_new_item'       => 'Ajouter une nouvelle carte',
-    'edit_item'          => 'Modifier la carte',
-    'all_items'          => 'Toutes les cartes',
-  );
+    // Section Carte du restaurant
+    $wp_customize->add_section('cotemer_menu_section', array(
+        'title'    => __('Carte du restaurant', 'cotemer'),
+        'priority' => 32,
+    ));
 
-  $args = array(
-    'labels'             => $labels,
-    'public'             => true,
-    'show_in_rest'       => true, // Support Gutenberg
-    'menu_icon'          => 'dashicons-media-document',
-    'supports'           => array('title', 'thumbnail'),
-  );
+// Titre de la carte
+    $wp_customize->add_setting('cotemer_menu_title', array(
+        'default'   => 'Notre carte',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_menu_title', array(
+        'label'    => __('Titre de la carte', 'cotemer'),
+        'section'  => 'cotemer_menu_section',
+        'type'     => 'text',
+    ));
 
-  register_post_type('restaurant_menu', $args);
+// Fichier PDF
+    $wp_customize->add_setting('cotemer_menu_pdf', array(
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Upload_Control($wp_customize, 'cotemer_menu_pdf', array(
+        'label'    => __('Fichier PDF de la carte', 'cotemer'),
+        'section'  => 'cotemer_menu_section',
+        'settings' => 'cotemer_menu_pdf',
+    )));
+// Section Galerie
+    $wp_customize->add_section('cotemer_gallery_section', array(
+        'title'    => __('Galerie photos', 'cotemer'),
+        'priority' => 33,
+    ));
+
+    for ($i = 1; $i <= 5; $i++) {
+        // Image
+        $wp_customize->add_setting("cotemer_gallery_image_$i", array(
+            'default' => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, "cotemer_gallery_image_{$i}", array(
+            'label'    => __("Image $i", 'cotemer'),
+            'section'  => 'cotemer_gallery_section',
+            'settings' => "cotemer_gallery_image_$i",
+        )));
+
+        // Légende
+        $wp_customize->add_setting("cotemer_gallery_caption_$i", array(
+            'default' => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+        $wp_customize->add_control("cotemer_gallery_caption_{$i}", array(
+            'label'    => __("Légende $i", 'cotemer'),
+            'section'  => 'cotemer_gallery_section',
+            'type'     => 'text',
+        ));
+    }
 }
-add_action('init', 'cotemer_register_menu_post_type');
 
 add_action('customize_register', 'cotemer_customize_register');
 
