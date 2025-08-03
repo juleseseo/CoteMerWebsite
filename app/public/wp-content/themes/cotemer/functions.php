@@ -225,4 +225,62 @@ add_theme_support('menus');
 remove_action('wp_head', 'wp_generator');
 remove_action('wp_head', 'wlwmanifest_link');
 remove_action('wp_head', 'rsd_link');
+
+function cotemer_get_today_closing_hour() {
+    $default_hours = "Lundi - Vendredi : 8h30 - 21h30\nDimanche : 8h30 - 18h";
+    $hours_string = get_theme_mod('cotemer_footer_hours', $default_hours);
+
+    // Convertit en tableau ligne par ligne
+    $lines = explode("\n", $hours_string);
+    $today = strtolower(date('l')); // ex: monday
+
+    // Correspondance des jours français => anglais
+    $jours = [
+        'lundi' => 'monday',
+        'mardi' => 'tuesday',
+        'mercredi' => 'wednesday',
+        'jeudi' => 'thursday',
+        'vendredi' => 'friday',
+        'samedi' => 'saturday',
+        'dimanche' => 'sunday'
+    ];
+
+    foreach ($lines as $line) {
+        // Nettoyage de la ligne
+        $line = trim($line);
+
+        if (stripos($line, 'fermé') !== false) {
+            foreach ($jours as $fr => $en) {
+                if (strpos(strtolower($line), $fr) !== false && $today === $en) {
+                    return "fermé";
+                }
+            }
+        } elseif (preg_match('/(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)(.*?)\:\s*(\d{1,2}h\d{0,2})\s*-\s*(\d{1,2}h\d{0,2})/i', $line, $matches)) {
+            $jours_mentionnés = explode(' - ', $matches[1]);
+            $jour_ligne = strtolower($matches[1]);
+
+            // Cas où c'est un intervalle de jours
+            if (strpos($jour_ligne, '-') !== false) {
+                [$debut, $fin] = array_map('trim', explode('-', $jour_ligne));
+                $jour_actuel_fr = array_search($today, $jours);
+
+                $jours_indexés = array_keys($jours);
+                $i_debut = array_search($debut, $jours_indexés);
+                $i_fin = array_search($fin, $jours_indexés);
+                $i_today = array_search($jour_actuel_fr, $jours_indexés);
+
+                if ($i_today !== false && $i_today >= $i_debut && $i_today <= $i_fin) {
+                    return $matches[4]; // Heure de fermeture
+                }
+            } else {
+                // Cas simple
+                if ($today === $jours[$jour_ligne]) {
+                    return $matches[4];
+                }
+            }
+        }
+    }
+
+    return "fermé"; // Valeur par défaut
+}
 ?>

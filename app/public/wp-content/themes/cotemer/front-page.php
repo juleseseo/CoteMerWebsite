@@ -42,13 +42,16 @@
     ">
       Venez découvrir nos plats en bord de mer
     </p>
-    <p style="
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
-      font-weight: 500;
-    ">
-      Aujourd'hui nous sommes ouverts jusqu'à
-    </p>
+      <p style="
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+">
+          Aujourd'hui nous sommes <?php
+          $closing = cotemer_get_today_closing_hour();
+          echo $closing === 'fermé' ? 'fermés' : "ouverts jusqu'à $closing";
+          ?>.
+      </p>
   </div>
 </section>
 
@@ -56,7 +59,6 @@
   <h2>Notre carte</h2>
   <div class="menu-grid">
     <?php
-    // Requête pour récupérer tous les menus du CPT 'restaurant_menu'
     $args = array(
       'post_type'      => 'restaurant_menu',
       'posts_per_page' => -1, // Récupérer tous les menus

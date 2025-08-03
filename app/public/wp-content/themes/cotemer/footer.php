@@ -28,8 +28,8 @@
     <p>
       <?php
       echo nl2br(esc_html(get_theme_mod(
-        'cotemer_footer_hours',
-        "Lundi - Samedi : 9h - 21h30 \nFermé le dimanche"
+          'cotemer_footer_hours',
+          "Lundi - Samedi : 8h30 - 21h30\nDimanche : 8h30 - 18h"
       )));
       ?>
     </p>
