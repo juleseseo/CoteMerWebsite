@@ -1,0 +1,138 @@
+/* Styles pour le contrôle de galerie dans le customizer */
+
+.gallery-control-container {
+    margin-top: 10px;
+}
+
+.gallery-items {
+    margin-bottom: 15px;
+}
+
+.gallery-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.gallery-item-preview {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.gallery-item-preview img {
+    max-width: 100px;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.gallery-item-preview .no-image {
+    background: #eee;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    color: #666;
+    border-radius: 3px;
+}
+
+.gallery-item-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gallery-caption {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.gallery-item-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.gallery-item-actions .button {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-height: auto;
+    line-height: 1.2;
+}
+
+.button.select-image {
+    background: #0073aa;
+    color: white;
+    border-color: #0073aa;
+}
+
+.button.select-image:hover {
+    background: #005a87;
+    border-color: #005a87;
+}
+
+.button.remove-item {
+    background: #dc3232;
+    color: white;
+    border-color: #dc3232;
+}
+
+.button.remove-item:hover {
+    background: #a02622;
+    border-color: #a02622;
+}
+
+.button.move-up,
+.button.move-down {
+    background: #f1f1f1;
+    border-color: #ccc;
+    width: 30px;
+    height: 25px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.button.move-up:hover,
+.button.move-down:hover {
+    background: #e8e8e8;
+}
+
+.button.move-up:disabled,
+.button.move-down:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.add-gallery-item {
+    background: #0073aa;
+    color: white;
+    border-color: #0073aa;
+    padding: 8px 15px;
+    font-size: 13px;
+}
+
+.add-gallery-item:hover {
+    background: #005a87;
+    border-color: #005a87;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 480px) {
+    .gallery-item-controls {
+        gap: 6px;
+    }
+
+    .gallery-item-actions {
+        flex-wrap: wrap;
+    }
+
+    .gallery-caption {
+        font-size: 11px;
+    }
+}

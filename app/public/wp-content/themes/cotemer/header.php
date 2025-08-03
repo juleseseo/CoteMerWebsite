@@ -18,7 +18,6 @@
             </a>
         </div>
 
-        <!-- Burger icon (mobile) -->
         <div class="burger" id="burger">
             <span></span>
             <span></span>

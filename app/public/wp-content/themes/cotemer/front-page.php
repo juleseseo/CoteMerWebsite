@@ -114,40 +114,38 @@ if ($customizer_pdf_url):
 
 
 
-<!-- Galerie -->
-    <section id="gallery">
-        <h2>Galerie</h2>
-        <div class="carousel-wrapper">
-            <button class="carousel-btn prev" id="prevBtn">&larr;</button>
-            <div class="carousel" id="carousel">
-                <?php
-                $has_gallery = false;
-                for ($i = 1; $i <= 5; $i++) {
-                    $image = get_theme_mod("cotemer_gallery_image_$i");
-                    $caption = get_theme_mod("cotemer_gallery_caption_$i");
+<section id="gallery">
+    <h2>Galerie</h2>
+    <div class="carousel-wrapper">
+        <button class="carousel-btn prev" id="prevBtn">&larr;</button>
+        <div class="carousel" id="carousel">
+            <?php
+            $gallery_data = get_theme_mod('cotemer_gallery_images', '');
+            $has_gallery = false;
 
-                    if ($image) {
-                        $has_gallery = true;
-                        echo '<div class="carousel-item">';
-                        echo '<img src="' . esc_url($image) . '" alt="' . esc_attr($caption) . '">';
-                        if ($caption) {
-                            echo '<p class="carousel-caption">' . esc_html($caption) . '</p>';
+            if (!empty($gallery_data)) {
+                $images = json_decode($gallery_data, true);
+
+                if (is_array($images) && !empty($images)) {
+                    $has_gallery = true;
+                    foreach ($images as $item) {
+                        if (!empty($item['image'])) {
+                            echo '<div class="carousel-item">';
+                            echo '<img src="' . esc_url($item['image']) . '" alt="' . esc_attr($item['caption']) . '">';
+                            if (!empty($item['caption'])) {
+                                echo '<p class="carousel-caption">' . esc_html($item['caption']) . '</p>';
+                            }
+                            echo '</div>';
                         }
-                        echo '</div>';
                     }
                 }
+            }
 
-                // Fallback si aucune image ajoutée
-                if (!$has_gallery) {
-                    echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder1.jpg" alt="Restaurant"></div>';
-                    echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder2.jpg" alt="Plats"></div>';
-                    echo '<div class="carousel-item"><img src="' . get_template_directory_uri() . '/assets/img/placeholder3.jpg" alt="Terrasse"></div>';
-                }
-                ?>
-            </div>
-            <button class="carousel-btn next" id="nextBtn">&rarr;</button>
+            ?>
         </div>
-    </section>
+        <button class="carousel-btn next" id="nextBtn">&rarr;</button>
+    </div>
+</section>
 
 <!-- A propos -->
 <section id="about">

@@ -5,58 +5,110 @@ function cotemer_enqueue_styles() {
 }
 add_action('wp_enqueue_scripts', 'cotemer_enqueue_styles');
 
+// Fonction de nettoyage des données de galerie
+function cotemer_sanitize_gallery_images($input) {
+    if (empty($input)) {
+        return '';
+    }
+
+    $data = json_decode($input, true);
+    if (!is_array($data)) {
+        return '';
+    }
+
+    $sanitized = array();
+    foreach ($data as $item) {
+        if (isset($item['image']) && isset($item['caption'])) {
+            $sanitized[] = array(
+                'image' => esc_url_raw($item['image']),
+                'caption' => sanitize_text_field($item['caption'])
+            );
+        }
+    }
+
+    return json_encode($sanitized);
+}
 
 function cotemer_customize_register($wp_customize) {
-  // Section Footer
-  $wp_customize->add_section('cotemer_footer_section', array(
-    'title'    => __('Information bas de page', 'cotemer'),
-    'priority' => 30,
-  ));
 
-  // Adresse
-  $wp_customize->add_setting('cotemer_footer_address', array(
-    'default'   => '20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France',
-    'sanitize_callback' => 'sanitize_textarea_field',
-  ));
-  $wp_customize->add_control('cotemer_footer_address', array(
-    'label'    => __('Adresse', 'cotemer'),
-    'section'  => 'cotemer_footer_section',
-    'type'     => 'textarea',
-  ));
+    // Définir la classe de contrôle personnalisé DANS la fonction customize_register
+    if (!class_exists('Cotemer_Gallery_Control')) {
+        class Cotemer_Gallery_Control extends WP_Customize_Control {
+            public $type = 'gallery';
 
-  // Téléphone
-  $wp_customize->add_setting('cotemer_footer_phone', array(
-    'default'   => '+33 2 97 53 63 67',
-    'sanitize_callback' => 'sanitize_text_field',
-  ));
-  $wp_customize->add_control('cotemer_footer_phone', array(
-    'label'    => __('Téléphone', 'cotemer'),
-    'section'  => 'cotemer_footer_section',
-    'type'     => 'text',
-  ));
+            public function enqueue() {
+                wp_enqueue_media();
+                wp_enqueue_script('cotemer-gallery-control', get_template_directory_uri() . '/assets/js/gallery-control.js', array('jquery', 'customize-controls'), '1.0.0', true);
+                wp_enqueue_style('cotemer-gallery-control', get_template_directory_uri() . '/assets/css/gallery-control.css', array(), '1.0.0');
+            }
+
+            public function render_content() {
+                ?>
+                <label>
+                    <span class="customize-control-title"><?php echo esc_html($this->label); ?></span>
+                    <div class="gallery-control-container">
+                        <div class="gallery-items" id="gallery-items-<?php echo $this->id; ?>"></div>
+                        <button type="button" class="button add-gallery-item" data-control-id="<?php echo $this->id; ?>">
+                            <?php _e('Ajouter une image', 'cotemer'); ?>
+                        </button>
+                    </div>
+                    <input type="hidden" <?php $this->link(); ?> value="<?php echo esc_attr($this->value()); ?>" />
+                </label>
+                <?php
+            }
+        }
+    }
+
+    // Section Footer
+    $wp_customize->add_section('cotemer_footer_section', array(
+        'title'    => __('Information bas de page', 'cotemer'),
+        'priority' => 30,
+    ));
+
+    // Adresse
+    $wp_customize->add_setting('cotemer_footer_address', array(
+        'default'   => '20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_footer_address', array(
+        'label'    => __('Adresse', 'cotemer'),
+        'section'  => 'cotemer_footer_section',
+        'type'     => 'textarea',
+    ));
+
+    // Téléphone
+    $wp_customize->add_setting('cotemer_footer_phone', array(
+        'default'   => '+33 2 97 53 63 67',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('cotemer_footer_phone', array(
+        'label'    => __('Téléphone', 'cotemer'),
+        'section'  => 'cotemer_footer_section',
+        'type'     => 'text',
+    ));
 
     // Mail
-  $wp_customize->add_setting('cotemer_footer_mail', array(
-    'default'   => 'cotemer.portnavalo@gmail.com',
-    'sanitize_callback' => 'sanitize_text_field',
-  ));
+    $wp_customize->add_setting('cotemer_footer_mail', array(
+        'default'   => 'cotemer.portnavalo@gmail.com',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
 
-  $wp_customize->add_control('cotemer_footer_mail', array(
-    'label'    => __('Mail', 'cotemer'),
-    'section'  => 'cotemer_footer_section',
-    'type'     => 'text',
-  ));
+    $wp_customize->add_control('cotemer_footer_mail', array(
+        'label'    => __('Mail', 'cotemer'),
+        'section'  => 'cotemer_footer_section',
+        'type'     => 'text',
+    ));
 
-  // Horaires
-  $wp_customize->add_setting('cotemer_footer_hours', array(
-    'default'   => 'Lundi - Samedi\n 9h - 21h30 \nFermé le dimanche',
-    'sanitize_callback' => 'sanitize_textarea_field',
-  ));
-  $wp_customize->add_control('cotemer_footer_hours', array(
-    'label'    => __('Horaires', 'cotemer'),
-    'section'  => 'cotemer_footer_section',
-    'type'     => 'textarea',
-  ));
+    // Horaires
+    $wp_customize->add_setting('cotemer_footer_hours', array(
+        'default'   => 'Lundi - Samedi\n 9h - 21h30 \nFermé le dimanche',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('cotemer_footer_hours', array(
+        'label'    => __('Horaires', 'cotemer'),
+        'section'  => 'cotemer_footer_section',
+        'type'     => 'textarea',
+    ));
 
     // Section "À propos"
     $wp_customize->add_section('cotemer_about_section', array(
@@ -64,7 +116,7 @@ function cotemer_customize_register($wp_customize) {
         'priority' => 31,
     ));
 
-// Bloc 1
+    // Bloc 1
     $wp_customize->add_setting('cotemer_about_title_1', array(
         'default' => 'Des Produits d\'Excellence',
         'sanitize_callback' => 'sanitize_text_field',
@@ -125,6 +177,7 @@ function cotemer_customize_register($wp_customize) {
         'section'  => 'cotemer_about_section',
         'settings' => 'cotemer_about_image_2',
     )));
+
     // Bloc 3
     $wp_customize->add_setting('cotemer_about_title_3', array(
         'default' => 'Des Produits d\'Excellence',
@@ -155,13 +208,14 @@ function cotemer_customize_register($wp_customize) {
         'section'  => 'cotemer_about_section',
         'settings' => 'cotemer_about_image_3',
     )));
+
     // Section Carte du restaurant
     $wp_customize->add_section('cotemer_menu_section', array(
         'title'    => __('Carte du restaurant', 'cotemer'),
         'priority' => 32,
     ));
 
-// Titre de la carte
+    // Titre de la carte
     $wp_customize->add_setting('cotemer_menu_title', array(
         'default'   => 'Notre carte',
         'sanitize_callback' => 'sanitize_text_field',
@@ -172,7 +226,7 @@ function cotemer_customize_register($wp_customize) {
         'type'     => 'text',
     ));
 
-// Fichier PDF
+    // Fichier PDF
     $wp_customize->add_setting('cotemer_menu_pdf', array(
         'default' => '',
         'sanitize_callback' => 'esc_url_raw',
@@ -182,43 +236,30 @@ function cotemer_customize_register($wp_customize) {
         'section'  => 'cotemer_menu_section',
         'settings' => 'cotemer_menu_pdf',
     )));
-// Section Galerie
+
+    // Section galerie
     $wp_customize->add_section('cotemer_gallery_section', array(
         'title'    => __('Galerie photos', 'cotemer'),
         'priority' => 33,
     ));
 
-    for ($i = 1; $i <= 5; $i++) {
-        // Image
-        $wp_customize->add_setting("cotemer_gallery_image_$i", array(
-            'default' => '',
-            'sanitize_callback' => 'esc_url_raw',
-        ));
-        $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, "cotemer_gallery_image_{$i}", array(
-            'label'    => __("Image $i", 'cotemer'),
-            'section'  => 'cotemer_gallery_section',
-            'settings' => "cotemer_gallery_image_$i",
-        )));
+    // Contrôle personnalisé pour gérer la galerie dynamique
+    $wp_customize->add_setting('cotemer_gallery_images', array(
+        'default' => '',
+        'sanitize_callback' => 'cotemer_sanitize_gallery_images',
+        'transport' => 'refresh',
+    ));
 
-        // Légende
-        $wp_customize->add_setting("cotemer_gallery_caption_$i", array(
-            'default' => '',
-            'sanitize_callback' => 'sanitize_text_field',
-        ));
-        $wp_customize->add_control("cotemer_gallery_caption_{$i}", array(
-            'label'    => __("Légende $i", 'cotemer'),
-            'section'  => 'cotemer_gallery_section',
-            'type'     => 'text',
-        ));
-    }
+    $wp_customize->add_control(new Cotemer_Gallery_Control($wp_customize, 'cotemer_gallery_images', array(
+        'label'    => __('Images de la galerie', 'cotemer'),
+        'section'  => 'cotemer_gallery_section',
+        'settings' => 'cotemer_gallery_images',
+    )));
 }
-
 add_action('customize_register', 'cotemer_customize_register');
 
 // Support pour les images à la une
 add_theme_support('post-thumbnails');
-
-
 
 // Nettoyage du head WordPress
 remove_action('wp_head', 'wp_generator');
@@ -282,6 +323,7 @@ function cotemer_get_today_closing_hour() {
 
     return "fermé"; // Valeur par défaut
 }
+
 function cotemer_remove_customizer_sections($wp_customize) {
     $wp_customize->remove_section('nav_menus');
     $wp_customize->remove_section('custom_css');
