@@ -295,6 +295,13 @@ footer {
     filter: none; /* Suppression de l'ombre */
 }
 
+.footer-logo {
+  text-align: center;
+  max-width: 120px;
+  margin-bottom: 15px;
+  filter: none;
+}
+
 .footer-column h3 {
     font-size: 1.3em;
     margin-bottom: 12px;
@@ -439,6 +446,18 @@ footer {
   font-size: 1.2rem;
   margin: 10px 0;
   color: #333;
+}
+
+.hover-link {
+  color: inherit;        /* garde la couleur du texte normal */
+  text-decoration: none; /* enlève le soulignement */
+  cursor: default;       /* curseur normal */
+}
+
+.hover-link:hover {
+  color: #4169E1;
+  text-decoration: underline;
+  font-weight: bold;     /* curseur de lien */
 }
 
 
