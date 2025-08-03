@@ -218,8 +218,7 @@ add_action('customize_register', 'cotemer_customize_register');
 // Support pour les images à la une
 add_theme_support('post-thumbnails');
 
-// Support pour les menus
-add_theme_support('menus');
+
 
 // Nettoyage du head WordPress
 remove_action('wp_head', 'wp_generator');
@@ -283,4 +282,11 @@ function cotemer_get_today_closing_hour() {
 
     return "fermé"; // Valeur par défaut
 }
+function cotemer_remove_customizer_sections($wp_customize) {
+    $wp_customize->remove_section('nav_menus');
+    $wp_customize->remove_section('custom_css');
+    $wp_customize->remove_section('static_front_page');
+    $wp_customize->remove_section('nav_menus-content');
+}
+add_action('customize_register', 'cotemer_remove_customizer_sections', 20);
 ?>

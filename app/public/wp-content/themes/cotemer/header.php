@@ -4,7 +4,7 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="<?php echo get_template_directory_uri(); ?>/assets/img/logo.png" type="image/png">
-    <title>Côté Mer</title>
+    <title><?php wp_title('|', true, 'right'); ?><?php bloginfo('name'); ?></title>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
