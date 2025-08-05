@@ -265,63 +265,90 @@ add_theme_support('post-thumbnails');
 remove_action('wp_head', 'wp_generator');
 remove_action('wp_head', 'wlwmanifest_link');
 remove_action('wp_head', 'rsd_link');
-
 function cotemer_get_today_closing_hour() {
-    $default_hours = "Lundi - Vendredi : 8h30 - 21h30\nDimanche : 8h30 - 18h";
-    $hours_string = get_theme_mod('cotemer_footer_hours', $default_hours);
+  $default_hours = "Lundi - Vendredi : 8h30 - 21h30\nDimanche : 8h30 - 18h";
+  $hours_string = get_theme_mod('cotemer_footer_hours', $default_hours);
 
-    // Convertit en tableau ligne par ligne
-    $lines = explode("\n", $hours_string);
-    $today = strtolower(date('l')); // ex: monday
+  // Convertit en tableau ligne par ligne
+  $lines = explode("\n", $hours_string);
+  $today = strtolower(date('l')); // ex: monday
 
-    // Correspondance des jours français => anglais
-    $jours = [
-        'lundi' => 'monday',
-        'mardi' => 'tuesday',
-        'mercredi' => 'wednesday',
-        'jeudi' => 'thursday',
-        'vendredi' => 'friday',
-        'samedi' => 'saturday',
-        'dimanche' => 'sunday'
-    ];
+  // Correspondance des jours français => anglais
+  $jours = [
+    'lundi' => 'monday',
+    'mardi' => 'tuesday',
+    'mercredi' => 'wednesday',
+    'jeudi' => 'thursday',
+    'vendredi' => 'friday',
+    'samedi' => 'saturday',
+    'dimanche' => 'sunday'
+  ];
 
-    foreach ($lines as $line) {
-        // Nettoyage de la ligne
-        $line = trim($line);
+  foreach ($lines as $line) {
+    // Nettoyage de la ligne
+    $line = trim($line);
 
-        if (stripos($line, 'fermé') !== false) {
-            foreach ($jours as $fr => $en) {
-                if (strpos(strtolower($line), $fr) !== false && $today === $en) {
-                    return "fermé";
-                }
-            }
-        } elseif (preg_match('/(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)(.*?)\:\s*(\d{1,2}h\d{0,2})\s*-\s*(\d{1,2}h\d{0,2})/i', $line, $matches)) {
-            $jours_mentionnés = explode(' - ', $matches[1]);
-            $jour_ligne = strtolower($matches[1]);
+    if (empty($line)) continue;
 
-            // Cas où c'est un intervalle de jours
-            if (strpos($jour_ligne, '-') !== false) {
-                [$debut, $fin] = array_map('trim', explode('-', $jour_ligne));
-                $jour_actuel_fr = array_search($today, $jours);
-
-                $jours_indexés = array_keys($jours);
-                $i_debut = array_search($debut, $jours_indexés);
-                $i_fin = array_search($fin, $jours_indexés);
-                $i_today = array_search($jour_actuel_fr, $jours_indexés);
-
-                if ($i_today !== false && $i_today >= $i_debut && $i_today <= $i_fin) {
-                    return $matches[4]; // Heure de fermeture
-                }
-            } else {
-                // Cas simple
-                if ($today === $jours[$jour_ligne]) {
-                    return $matches[4];
-                }
-            }
+    // Vérification si fermé
+    if (stripos($line, 'fermé') !== false) {
+      foreach ($jours as $fr => $en) {
+        if (strpos(strtolower($line), $fr) !== false && $today === $en) {
+          return "fermé";
         }
+      }
+      continue;
     }
 
-    return "fermé"; // Valeur par défaut
+    // Regex améliorée pour capturer les plages de jours et les jours seuls
+    if (preg_match('/^(.*?)\s*:\s*(\d{1,2}h\d{0,2})\s*-\s*(\d{1,2}h\d{0,2})$/i', $line, $matches)) {
+      $jours_partie = trim($matches[1]);
+      $heure_ouverture = $matches[2];
+      $heure_fermeture = $matches[3];
+
+      // Vérifier si c'est une plage de jours (ex: "Lundi - Samedi")
+      if (preg_match('/^(.*?)\s*-\s*(.*?)$/i', $jours_partie, $plage_matches)) {
+        $jour_debut = strtolower(trim($plage_matches[1]));
+        $jour_fin = strtolower(trim($plage_matches[2]));
+
+        // Trouver le jour actuel en français
+        $jour_actuel_fr = array_search($today, $jours);
+
+        if ($jour_actuel_fr !== false) {
+          $jours_ordre = array_keys($jours);
+          $index_debut = array_search($jour_debut, $jours_ordre);
+          $index_fin = array_search($jour_fin, $jours_ordre);
+          $index_actuel = array_search($jour_actuel_fr, $jours_ordre);
+
+          // Vérifier si le jour actuel est dans la plage
+          if ($index_debut !== false && $index_fin !== false && $index_actuel !== false) {
+            // Gérer le cas où la plage traverse la semaine (ex: vendredi - lundi)
+            if ($index_debut <= $index_fin) {
+              // Plage normale
+              if ($index_actuel >= $index_debut && $index_actuel <= $index_fin) {
+                return $heure_fermeture;
+              }
+            } else {
+              // Plage qui traverse la semaine
+              if ($index_actuel >= $index_debut || $index_actuel <= $index_fin) {
+                return $heure_fermeture;
+              }
+            }
+          }
+        }
+      } else {
+        // Jour unique (ex: "Dimanche")
+        $jour_unique = strtolower(trim($jours_partie));
+        $jour_actuel_fr = array_search($today, $jours);
+
+        if ($jour_actuel_fr === $jour_unique) {
+          return $heure_fermeture;
+        }
+      }
+    }
+  }
+
+  return "fermé"; // Valeur par défaut
 }
 
 function cotemer_remove_customizer_sections($wp_customize) {
