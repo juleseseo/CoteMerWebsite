@@ -174,17 +174,18 @@ if ($customizer_pdf_url):
 
     <!-- Contact -->
     <section id="contact">
-        <h2>Ou nous trouver ?</h2>
+        <h2>Contactez-nous</h2>
         <div class="section-content">
             <?php
             $contact_page = get_page_by_path('contact');
             if ($contact_page) {
                 echo apply_filters('the_content', $contact_page->post_content);
             } else {
-                echo '<p>📍 20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France</p>';
-                echo '<p>📞 +33 2 97 53 63 67</p>';
-                echo '<p>✉️ cotemer.portnavalo@gmail.com</p>';
+              echo '<p>📍 <a class="hover-link" href="https://www.google.com/maps/place/20+Rue+du+G%C3%A9n%C3%A9ral+de+Gaulle,+56640+Arzon,+France" target="_blank">20 RUE DU GENERAL DE GAULLE, 56640 ARZON, France</a></p>';
+              echo '<p>📞 <a class="hover-link" href="tel:+33297536367">+33 2 97 53 63 67</a></p>';
+              echo '<p>✉️ <a class="hover-link" href="mailto:cotemer.portnavalo@gmail.com">cotemer.portnavalo@gmail.com</a></p>';
             }
+
             ?>
         </div>
       <!-- Google Maps -->

@@ -1,8 +1,7 @@
 <footer>
-    <div class="footer-column">
-        <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo.png" alt="Logo <?php bloginfo('name'); ?>">
-        <p>Restaurant de fruits de mer</p>
-    </div>
+  <div class="footer-column footer-logo">
+    <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo.png" alt="Logo <?php bloginfo('name'); ?>">
+  </div>
 
     <div class="footer-column">
         <h3>Contact</h3>
