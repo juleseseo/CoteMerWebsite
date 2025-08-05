@@ -352,6 +352,22 @@ footer {
     color: #CCCCCC;
 }
 
+.language-switcher {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.language-switcher a {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.language-switcher a:hover {
+  transform: scale(1.1);
+}
+
+
 #about {
   padding: 40px 15px;
 }

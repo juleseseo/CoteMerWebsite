@@ -28,7 +28,7 @@
         <!-- Navigation -->
         <nav class="main-nav" id="main-nav">
             <ul class="nav-list">
-                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#accueil"><?php _e('Accueil', 'ton-theme'); ?></a></li>
                 <li><a href="#menu">Menu</a></li>
                 <li><a href="#gallery">Galerie</a></li>
                 <li><a href="#about">À propos</a></li>
@@ -36,18 +36,19 @@
             </ul>
         </nav>
 
-        <!-- Sélecteur de langue -->
-        <div class="language-switcher">
-            <?php
-            if (function_exists('pll_the_languages')) {
-                pll_the_languages(array(
-                    'dropdown' => 0,
-                    'show_flags' => 1,
-                    'show_names' => 0,
-                    'hide_if_no_translation' => 1
-                ));
-            }
-            ?>
-        </div>
+      <div class="language-switcher">
+        <?php
+        if (function_exists('pll_the_languages')) {
+          pll_the_languages(array(
+            'dropdown' => 0,
+            'show_flags' => 1,
+            'show_names' => 1,    
+            'hide_if_no_translation' => 0
+          ));
+        }
+        ?>
+      </div>
+
+
     </div>
 </header>
