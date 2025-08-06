@@ -39,17 +39,19 @@ body {
     max-width: 1200px;
     margin: auto;
 }
-
-.logo {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-}
-
 .logo img {
-    height: 100px;
-    width: auto;
+  height: 60px;
+  padding-top: 5px;
+  width: auto;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
 }
+
+.logo img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
 
 .main-nav {
     display: flex;
@@ -174,18 +176,126 @@ section h2::after {
 
 /* ========== MENU SECTION ========== */
 #menu {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    margin: 0 0 40px 0;
-    padding: 40px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Ombre plus douce */
+  margin: 0 0 40px 0;
+  padding: 40px;
+  transition: box-shadow 0.3s ease; /* Effet de transition pour l'ombre */
 }
 
-.menu-content {
-    text-align: center;
-    font-size: 1.1rem;
-    color: #555;
-    line-height: 1.8;
+#menu:hover {
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15); /* Ombre au survol */
+}
+
+/* Titre de la section */
+#menu h2 {
+  font-size: 2rem;
+  color: #060C64;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  position: relative;
+}
+
+/* Grille du menu */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+/* Cartes individuelles du menu */
+.menu-item {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%; /* S'assurer que l'iframe est responsive */
+  max-width: 600px;
+  text-align: center;
+}
+
+.menu-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Texte de l'élément du menu */
+.menu-item p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Style de l'iframe pour l'intégration du PDF ou de l'image */
+.menu-item iframe {
+  width: 100%;
+  height: 400px;
+  border-radius: 10px;
+}
+
+/* Images : assure qu'elles restent responsives */
+.menu-item img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+
+/* Modale (cachée par défaut) */
+.modal {
+  display: none; /* Cacher la modale par défaut */
+  position: fixed;
+  z-index: 1; /* S'assurer que la modale est au-dessus */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+  padding-top: 50px;
+  overflow: auto;
+}
+
+/* Contenu de la modale */
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+  animation: zoomIn 0.3s ease-in-out;
+}
+
+/* Animation pour l'agrandissement */
+@keyframes zoomIn {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Bouton de fermeture */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #aaa;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #333;
 }
 
 /* ========== GALLERY ========== */

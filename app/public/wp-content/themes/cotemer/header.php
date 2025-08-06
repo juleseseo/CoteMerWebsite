@@ -3,7 +3,7 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="<?php echo get_template_directory_uri(); ?>/assets/img/logo.png" type="image/png">
+    <link rel="icon" href="<?php echo get_template_directory_uri(); ?>/assets/img/icon.png" type="image/png">
     <title><?php wp_title('|', true, 'right'); ?><?php bloginfo('name'); ?></title>
     <?php wp_head(); ?>
 </head>
@@ -34,20 +34,7 @@
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
-
-      <div class="language-switcher">
-        <?php
-        if (function_exists('pll_the_languages')) {
-          pll_the_languages(array(
-            'dropdown' => 0,
-            'show_flags' => 1,
-            'show_names' => 1,    
-            'hide_if_no_translation' => 0
-          ));
-        }
-        ?>
-      </div>
-
-
     </div>
+
+
 </header>

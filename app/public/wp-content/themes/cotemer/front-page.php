@@ -1,5 +1,8 @@
 <?php get_header(); ?>
 
+<?php include get_template_directory() . '/intro.php'; ?>
+
+
 <section id="banner" style="
   position: relative;
   padding-top: 150px;
@@ -59,58 +62,81 @@
   <h2>Notre carte</h2>
   <div class="menu-grid">
     <?php
+    // --- CPT restaurant_menu ---
     $args = array(
       'post_type'      => 'restaurant_menu',
-      'posts_per_page' => -1, // Récupérer tous les menus
+      'posts_per_page' => -1,
       'orderby'        => 'title',
       'order'          => 'ASC',
     );
     $menus = new WP_Query($args);
 
-    // Variable pour savoir si on a affiché quelque chose
-    $has_content = false;
-
     if ($menus->have_posts()):
       while ($menus->have_posts()): $menus->the_post();
-        $file_url = get_post_meta(get_the_ID(), '_cotemer_menu_file', true);
-        if ($file_url): ?>
-          <div class="menu-item">
-            <p><strong><?php the_title(); ?></strong></p>
-            <iframe src="https://docs.google.com/viewer?url=<?php echo esc_url($file_url); ?>&embedded=true"
-                    width="600"
-                    height="400"
-                    style="border: none;"></iframe>
-          </div>
-          <?php $has_content = true; ?>
-        <?php endif;
+        $pdf_url = get_post_meta(get_the_ID(), '_cotemer_menu_file', true);
+
+        if ($pdf_url):
+          // Si c'est un ID, convertit en URL
+          if (is_numeric($pdf_url)) {
+            $pdf_url = wp_get_attachment_url($pdf_url);
+          }
+
+          if ($pdf_url): ?>
+            <div class="menu-item">
+              <p><strong><?php the_title(); ?></strong></p>
+
+              <iframe
+                src="<?php echo esc_url( get_template_directory_uri() . '/pdfjs/web/viewer.html?file=' . urlencode($pdf_url) ); ?>"
+                width="100%"
+                height="400"
+                style="border:none;"
+                loading="lazy">
+                <p>Votre navigateur ne supporte pas les iframes. <a href="<?php echo esc_url($pdf_url); ?>" target="_blank">Cliquez ici pour voir le PDF</a></p>
+              </iframe>
+
+              <p style="text-align: center; margin-top: 10px;">
+                <a href="<?php echo esc_url($pdf_url); ?>" target="_blank" class="pdf-link">
+                  📄 Ouvrir le PDF dans un nouvel onglet
+                </a>
+              </p>
+            </div>
+          <?php endif;
+        endif;
       endwhile;
       wp_reset_postdata();
     endif;
 
-    $customizer_pdf_url = get_theme_mod('cotemer_menu_pdf');
-$customizer_pdf_title = get_theme_mod('cotemer_menu_title');
+    // --- Customizer CORRIGÉ ---
+    $customizer_pdf_id = get_theme_mod('cotemer_menu_pdf'); // Maintenant c'est un ID
+    $customizer_pdf_title = get_theme_mod('cotemer_menu_title');
 
-if ($customizer_pdf_url):
-    $file_ext = strtolower(pathinfo($customizer_pdf_url, PATHINFO_EXTENSION));
-    ?>
-    <div class="menu-item">
-      <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
-      <?php if ($file_ext === 'pdf'): ?>
-        <iframe src="<?php echo esc_url($customizer_pdf_url); ?>" width="100%" height="600px" style="border: none;"></iframe>
-      <?php elseif (in_array($file_ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
-        <img src="<?php echo esc_url($customizer_pdf_url); ?>" alt="<?php echo esc_attr($customizer_pdf_title); ?>" style="max-width:100%; height:auto;">
-      <?php else: ?>
-        <p>Format non supporté : <?php echo esc_html($file_ext); ?></p>
-      <?php endif; ?>
-    </div>
-<?php endif; ?>
+    if ($customizer_pdf_id):
+      $customizer_pdf_url = wp_get_attachment_url($customizer_pdf_id);
 
+      if ($customizer_pdf_url):
+        ?>
+        <div class="menu-item">
+          <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
+
+          <iframe
+            src="<?php echo esc_url( get_template_directory_uri() . '/pdfjs/web/viewer.html?file=' . urlencode($customizer_pdf_url) ); ?>"
+            width="100%"
+            height="400"
+            style="border:none;"
+            loading="lazy">
+            <p>Votre navigateur ne supporte pas les iframes. <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank">Cliquez ici pour voir le PDF</a></p>
+          </iframe>
+
+          <p style="text-align: center; margin-top: 10px;">
+            <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank" class="pdf-link">
+              📄 Ouvrir le PDF dans un nouvel onglet
+            </a>
+          </p>
+        </div>
+      <?php endif;
+    endif; ?>
   </div>
 </section>
-
-
-
-
 
 
 

@@ -226,18 +226,17 @@ function cotemer_customize_register($wp_customize) {
         'type'     => 'text',
     ));
 
-    // Fichier PDF
-    $wp_customize->add_setting('cotemer_menu_pdf', array(
-        'default' => '',
-        'sanitize_callback' => 'esc_url_raw',
-    ));
-    $wp_customize->add_control(new WP_Customize_Upload_Control($wp_customize, 'cotemer_menu_pdf', array(
-        'label'    => __('Fichier PDF de la carte', 'cotemer'),
-        'section'  => 'cotemer_menu_section',
-        'settings' => 'cotemer_menu_pdf',
-    )));
+  $wp_customize->add_setting('cotemer_menu_pdf', array(
+    'default' => '',
+    'sanitize_callback' => 'absint', // Valide que c'est un entier (ID)
+  ));
+  $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'cotemer_menu_pdf', array(
+    'label'    => __('Fichier PDF de la carte', 'cotemer'),
+    'section'  => 'cotemer_menu_section',
+    'mime_type' => 'application/pdf', // Limite aux PDFs seulement
+  )));
 
-    // Section galerie
+  // Section galerie
     $wp_customize->add_section('cotemer_gallery_section', array(
         'title'    => __('Galerie photos', 'cotemer'),
         'priority' => 33,
@@ -358,4 +357,423 @@ function cotemer_remove_customizer_sections($wp_customize) {
     $wp_customize->remove_section('nav_menus-content');
 }
 add_action('customize_register', 'cotemer_remove_customizer_sections', 20);
+
+
+function custom_language_buttons() {
+  if (!function_exists('pll_the_languages')) {
+    return '';
+  }
+
+  // Récupérer toutes les langues disponibles
+  $languages = pll_the_languages(array(
+    'raw' => 1,
+    'hide_if_empty' => 0,  // Afficher même si pas de contenu traduit
+    'show_flags' => 1,
+    'show_names' => 1
+  ));
+
+  $current_lang = pll_current_language();
+
+  if (empty($languages)) {
+    return '';
+  }
+
+  $buttons_html = '<div class="language-switcher language-buttons">';
+
+  foreach ($languages as $lang) {
+    $active_class = ($lang['slug'] === $current_lang) ? ' active' : '';
+    $flag_img = !empty($lang['flag']) ? '<img src="' . esc_url($lang['flag']) . '" alt="' . esc_attr($lang['name']) . '" width="20" height="15"> ' : '';
+
+    $buttons_html .= '<a href="' . esc_url($lang['url']) . '" class="lang-button' . $active_class . '" data-lang="' . esc_attr($lang['slug']) . '">';
+    $buttons_html .= $flag_img . esc_html($lang['name']);
+    $buttons_html .= '</a>';
+  }
+
+  $buttons_html .= '</div>';
+
+  return $buttons_html;
+}
+
+// Fonction pour créer un dropdown des langues
+function custom_language_dropdown() {
+  if (!function_exists('pll_the_languages')) {
+    return '';
+  }
+
+  $languages = pll_the_languages(array(
+    'raw' => 1,
+    'hide_if_empty' => 0,
+    'show_flags' => 1,
+    'show_names' => 1
+  ));
+
+  $current_lang = pll_current_language();
+
+  if (empty($languages)) {
+    return '';
+  }
+
+  $dropdown_html = '<div class="language-switcher">';
+  $dropdown_html .= '<select id="language-dropdown" class="custom-lang-dropdown">';
+
+  foreach ($languages as $lang) {
+    $selected = ($lang['slug'] === $current_lang) ? ' selected' : '';
+    $dropdown_html .= '<option value="' . esc_url($lang['url']) . '"' . $selected . '>';
+    $dropdown_html .= esc_html($lang['name']);
+    $dropdown_html .= '</option>';
+  }
+
+  $dropdown_html .= '</select>';
+  $dropdown_html .= '</div>';
+
+  return $dropdown_html;
+}
+/**
+ * TRANSLATEPRESS - Configuration complète
+ * Remplace le code Polylang dans functions.php
+ */
+
+// Fonction pour créer un sélecteur de langue personnalisé avec boutons
+function custom_translatepress_buttons() {
+    // Vérifier si TranslatePress est actif
+    if (!class_exists('TRP_Translate_Press')) {
+        return '';
+    }
+
+    // Obtenir l'instance de TranslatePress
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_languages = $trp->get_component('languages');
+    $trp_settings = $trp->get_component('settings')->get_settings();
+
+    // Obtenir les langues configurées
+    $published_languages = $trp_settings['publish-languages'];
+    $default_language = $trp_settings['default-language'];
+    $current_language = $trp->get_component('languages')->get_current_language();
+
+    if (empty($published_languages)) {
+        return '';
+    }
+
+    $buttons_html = '<div class="trp-language-switcher trp-language-buttons">';
+
+    foreach ($published_languages as $language_code) {
+        $language_name = $trp_languages->get_language_names(array($language_code), 'english_name');
+        $language_name = $language_name[$language_code];
+
+        $active_class = ($language_code === $current_language) ? ' trp-current-language' : '';
+
+        // URL pour la langue
+        $language_url = $trp_languages->add_language_to_home_url($language_code);
+        if (!is_front_page() && !is_home()) {
+            $language_url = $trp_languages->get_url_for_language($language_code);
+        }
+
+        // Drapeau (si disponible)
+        $flag_path = TRP_PLUGIN_URL . 'assets/images/flags/' . $language_code . '.png';
+        $flag_img = '<img src="' . esc_url($flag_path) . '" alt="' . esc_attr($language_name) . '" width="20" height="15"> ';
+
+        $buttons_html .= '<a href="' . esc_url($language_url) . '" class="trp-lang-button' . $active_class . '" data-trp-language="' . esc_attr($language_code) . '">';
+        $buttons_html .= $flag_img . esc_html($language_name);
+        $buttons_html .= '</a>';
+    }
+
+    $buttons_html .= '</div>';
+    return $buttons_html;
+}
+
+// Fonction pour créer un dropdown personnalisé
+function custom_translatepress_dropdown() {
+    if (!class_exists('TRP_Translate_Press')) {
+        return '';
+    }
+
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_languages = $trp->get_component('languages');
+    $trp_settings = $trp->get_component('settings')->get_settings();
+
+    $published_languages = $trp_settings['publish-languages'];
+  $current_language = function_exists('trp_get_current_language') ? trp_get_current_language() : '';
+
+    if (empty($published_languages)) {
+        return '';
+    }
+
+    $dropdown_html = '<div class="trp-language-switcher trp-language-dropdown">';
+    $dropdown_html .= '<select id="trp-language-select" class="trp-custom-dropdown">';
+
+    foreach ($published_languages as $language_code) {
+        $language_name = $trp_languages->get_language_names(array($language_code), 'english_name');
+        $language_name = $language_name[$language_code];
+
+        $selected = ($language_code === $current_language) ? ' selected' : '';
+
+      $language_url = function_exists('trp_get_url_for_language') ? trp_get_url_for_language($language_code) : '';
+        if (!is_front_page() && !is_home()) {
+            $language_url = $trp_languages->get_url_for_language($language_code);
+        }
+
+        $dropdown_html .= '<option value="' . esc_url($language_url) . '"' . $selected . '>';
+        $dropdown_html .= esc_html($language_name);
+        $dropdown_html .= '</option>';
+    }
+
+    $dropdown_html .= '</select>';
+    $dropdown_html .= '</div>';
+
+    return $dropdown_html;
+}
+
+// Script JavaScript pour auto-détection et gestion des sélecteurs
+function add_translatepress_script() {
+    if (!class_exists('TRP_Translate_Press')) {
+        return;
+    }
+
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_settings = $trp->get_component('settings')->get_settings();
+    $published_languages = $trp_settings['publish-languages'];
+  $current_language = function_exists('trp_get_current_language') ? trp_get_current_language() : '';
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // === AUTO-DÉTECTION DE LANGUE ===
+        if (!sessionStorage.getItem('trp_user_language_selected')) {
+            const browserLang = navigator.language.substring(0, 2);
+            const availableLanguages = <?php echo json_encode($published_languages); ?>;
+            const currentLang = '<?php echo $current_language; ?>';
+
+            // Si la langue du navigateur est disponible et différente
+            if (availableLanguages.includes(browserLang) && browserLang !== currentLang) {
+                sessionStorage.setItem('trp_user_language_selected', 'auto');
+
+                // Construire l'URL pour la nouvelle langue
+                let newUrl = window.location.href;
+
+                // Si on est déjà sur une version traduite, remplacer
+                const urlParts = window.location.pathname.split('/');
+                if (availableLanguages.includes(urlParts[1])) {
+                    newUrl = newUrl.replace('/' + urlParts[1] + '/', '/' + browserLang + '/');
+                } else {
+                    // Ajouter la langue à l'URL
+                    newUrl = window.location.origin + '/' + browserLang + window.location.pathname + window.location.search;
+                }
+
+                window.location.href = newUrl;
+                return;
+            }
+        }
+
+        // === GESTION DU DROPDOWN ===
+        const dropdown = document.getElementById('trp-language-select');
+        if (dropdown) {
+            dropdown.addEventListener('change', function(e) {
+                sessionStorage.setItem('trp_user_language_selected', 'manual');
+                if (e.target.value) {
+                    window.location.href = e.target.value;
+                }
+            });
+        }
+
+        // === GESTION DES BOUTONS ===
+        const langButtons = document.querySelectorAll('.trp-lang-button');
+        langButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                sessionStorage.setItem('trp_user_language_selected', 'manual');
+
+                // Animation de chargement
+                this.style.opacity = '0.6';
+                this.style.pointerEvents = 'none';
+
+                window.location.href = this.href;
+            });
+        });
+    });
+    </script>
+
+    <style>
+    /* === STYLES POUR TRANSLATEPRESS === */
+
+    /* Container principal */
+    .trp-language-switcher {
+        display: inline-block;
+        margin: 10px 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* === STYLES BOUTONS === */
+    .trp-language-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .trp-lang-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #495057;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .trp-lang-button:hover {
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        border-color: #adb5bd;
+        text-decoration: none;
+        color: #495057;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .trp-lang-button.trp-current-language {
+        background: linear-gradient(135deg, #007cba 0%, #005a87 100%);
+        color: #fff;
+        border-color: #005a87;
+        cursor: default;
+        box-shadow: 0 2px 4px rgba(0,124,186,0.3);
+    }
+
+    .trp-lang-button.trp-current-language:hover {
+        transform: none;
+        background: linear-gradient(135deg, #007cba 0%, #005a87 100%);
+    }
+
+    .trp-lang-button img {
+        border-radius: 3px;
+        flex-shrink: 0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    /* === STYLES DROPDOWN === */
+    .trp-custom-dropdown {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        min-width: 160px;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .trp-custom-dropdown:hover {
+        border-color: #adb5bd;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .trp-custom-dropdown:focus {
+        outline: none;
+        border-color: #007cba;
+        box-shadow: 0 0 0 3px rgba(0,124,186,0.1);
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+        .trp-language-buttons {
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .trp-lang-button {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .trp-custom-dropdown {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+
+    /* === ANIMATION DE CHARGEMENT === */
+    .trp-language-switcher.loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .trp-lang-button[style*="opacity"] {
+        transition: opacity 0.2s ease;
+    }
+
+    /* === INTEGRATION AVEC THEMES POPULAIRES === */
+
+    /* Astra */
+    .ast-header-break-point .trp-language-switcher {
+        margin: 5px 0;
+    }
+
+    /* GeneratePress */
+    .main-navigation .trp-language-switcher {
+        margin: 0 10px;
+    }
+
+    /* OceanWP */
+    #site-navigation-wrap .trp-language-switcher {
+        display: inline-flex;
+        align-items: center;
+    }
+    </style>
+    <?php
+}
+add_action('wp_head', 'add_translatepress_script');
+
+// Fonction principale pour afficher le sélecteur
+function display_translatepress_switcher($type = 'buttons') {
+    if ($type === 'dropdown') {
+        echo custom_translatepress_dropdown();
+    } else {
+        echo custom_translatepress_buttons();
+    }
+}
+
+// Shortcode pour utiliser dans le contenu
+function translatepress_switcher_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'type' => 'buttons'
+    ), $atts);
+
+    if ($atts['type'] === 'dropdown') {
+        return custom_translatepress_dropdown();
+    } else {
+        return custom_translatepress_buttons();
+    }
+}
+add_shortcode('trp_language_switcher', 'translatepress_switcher_shortcode');
+
+// Désactiver le sélecteur par défaut de TranslatePress (optionnel)
+function hide_default_translatepress_switcher() {
+    return false;
+}
+add_filter('trp_ls_shortcode_show_disabled_language', 'hide_default_translatepress_switcher');
+
+// Debug TranslatePress (décommentez pour debug)
+/*
+function debug_translatepress() {
+    if (!is_admin() && class_exists('TRP_Translate_Press') && current_user_can('administrator')) {
+        $trp = TRP_Translate_Press::get_trp_instance();
+        $trp_settings = $trp->get_component('settings')->get_settings();
+        $current_language = $trp->get_component('languages')->get_current_language();
+
+        echo '<div style="position: fixed; top: 10px; right: 10px; background: #333; color: #fff; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 9999; max-width: 300px;">';
+        echo '<strong>TranslatePress Debug:</strong><br>';
+        echo 'Langue courante: ' . $current_language . '<br>';
+        echo 'Langues publiées: ' . implode(', ', $trp_settings['publish-languages']) . '<br>';
+        echo 'URL courante: ' . $_SERVER['REQUEST_URI'] . '<br>';
+        echo '</div>';
+    }
+}
+add_action('wp_footer', 'debug_translatepress');
+*/
 ?>
