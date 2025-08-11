@@ -326,7 +326,7 @@ section h2::after {
   border-radius: 15px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.12);
   background: #f9f9f9;
-  width: 400px; /* Largeur fixe ou ajuste à ton besoin */
+  width: 500px; /* Largeur fixe ou ajuste à ton besoin */
 }
 
 .carousel {
@@ -346,19 +346,18 @@ section h2::after {
 
 .carousel-item img {
   max-width: 100%;
-  max-height: 300px;
+  max-height: 400px; /* Augmente la hauteur max */
   object-fit: contain;
   border-radius: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* Plus d'espace avec le texte */
 }
 
 .carousel-item p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.3rem; /* Plus grand texte */
+  font-weight: bold; /* Texte plus lisible */
   color: #333;
 }
-
-
 
 /* Boutons de navigation */
 .carousel-btn {
