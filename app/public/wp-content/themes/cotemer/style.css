@@ -190,7 +190,7 @@ section h2::after {
 
 /* Titre de la section */
 #menu h2 {
-  font-size: 2rem;
+  font-size: 2rem; /* agrandi */
   color: #060C64;
   text-align: center;
   margin-bottom: 30px;
@@ -213,7 +213,7 @@ section h2::after {
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 100%; /* S'assurer que l'iframe est responsive */
+  width: 120%; /* S'assurer que l'iframe est responsive */
   max-width: 600px;
   text-align: center;
 }
@@ -225,24 +225,25 @@ section h2::after {
 
 /* Texte de l'élément du menu */
 .menu-item p {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 10px;
 }
 
-/* Style de l'iframe pour l'intégration du PDF ou de l'image */
 .menu-item iframe {
   width: 100%;
-  height: 400px;
+  height: 600px; /* plus haute que 400px */
   border-radius: 10px;
 }
 
-/* Images : assure qu'elles restent responsives */
+
 .menu-item img {
-  max-width: 100%;
+  max-width: 120%; /* agrandi au-delà de 100% */
   height: auto;
   border-radius: 10px;
+  display: block;
+  margin: 0 auto; /* centrer si besoin */
 }
 
 
@@ -319,14 +320,14 @@ section h2::after {
 }
 .carousel-wrapper {
   position: relative;
-  overflow: hidden; /* Masque les images hors cadre */
+  overflow: hidden;
   display: flex;
   justify-content: center;
   margin: auto;
   border-radius: 15px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.12);
   background: #f9f9f9;
-  width: 500px; /* Largeur fixe ou ajuste à ton besoin */
+  width: 500px;
 }
 
 .carousel {
@@ -739,4 +740,122 @@ footer {
     font-size: 1rem;
     margin-top: 0.5em;
     color: #444;
+}
+/* Styles pour la section des cartes du restaurant */
+.menu-cards-section {
+  padding: 60px 0;
+  background: #f9f9f9;
+}
+
+.menu-cards-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.menu-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.menu-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.menu-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+.menu-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #0073aa;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.menu-card-link:hover {
+  background: #005a87;
+  color: white;
+  text-decoration: none;
+}
+
+.pdf-icon {
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-cards-section {
+    padding: 40px 0;
+  }
+
+  .menu-cards-section h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .menu-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 15px;
+  }
+
+  .menu-card {
+    padding: 25px;
+  }
+
+  .menu-card h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Variante avec icônes plus élaborées */
+.menu-card-link::before {
+  content: "📄";
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+/* Animation au chargement */
+.menu-card {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.menu-card:nth-child(1) { animation-delay: 0.1s; }
+.menu-card:nth-child(2) { animation-delay: 0.2s; }
+.menu-card:nth-child(3) { animation-delay: 0.3s; }
+.menu-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

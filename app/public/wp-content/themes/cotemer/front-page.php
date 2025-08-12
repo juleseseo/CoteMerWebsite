@@ -59,10 +59,48 @@
 </section>
 
 <section id="menu">
-  <h2>Notre carte</h2>
+  <!-- Modale pour afficher l'image en grand -->
+  <div id="imageModal" class="modal">
+    <span class="close-btn">&times;</span>
+    <img class="modal-content" id="modalImage" alt="Image agrandie">
+    <div id="caption"></div>
+  </div>
+
+  <?php
+  // Récupérer le titre depuis le customizer (cartes multiples)
+  $menu_title = get_theme_mod('cotemer_menu_cards_title', 'Notre carte');
+  ?>
+  <h2><?php echo esc_html($menu_title); ?></h2>
+
   <div class="menu-grid">
     <?php
-    // --- CPT restaurant_menu ---
+    // Fonction pour convertir un PDF en image
+    function convert_pdf_to_image($pdf_url) {
+      if (!$pdf_url) return false;
+
+      $upload_dir = wp_upload_dir();
+      $pdf_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $pdf_url);
+      $output_path = str_replace('.pdf', '.jpg', $pdf_path);
+      $output_url  = str_replace('.pdf', '.jpg', $pdf_url);
+
+      // Si l'image n'existe pas déjà, on la crée
+      if (!file_exists($output_path)) {
+        try {
+          $imagick = new Imagick();
+          $imagick->setResolution(150, 150); // Qualité
+          $imagick->readImage($pdf_path . '[0]'); // Première page
+          $imagick->setImageFormat('jpg');
+          $imagick->writeImage($output_path);
+          $imagick->clear();
+          $imagick->destroy();
+        } catch (Exception $e) {
+          return false;
+        }
+      }
+      return $output_url;
+    }
+
+    // --- CPT restaurant_menu (garde ton système existant) ---
     $args = array(
       'post_type'      => 'restaurant_menu',
       'posts_per_page' => -1,
@@ -75,69 +113,83 @@
       while ($menus->have_posts()): $menus->the_post();
         $pdf_url = get_post_meta(get_the_ID(), '_cotemer_menu_file', true);
 
-        if ($pdf_url):
-          // Si c'est un ID, convertit en URL
+        if ($pdf_url) {
           if (is_numeric($pdf_url)) {
             $pdf_url = wp_get_attachment_url($pdf_url);
           }
 
-          if ($pdf_url): ?>
-            <div class="menu-item">
+          $image_url = convert_pdf_to_image($pdf_url);
+
+          if ($image_url): ?>
+            <div class="menu-item" data-pdf="<?php echo esc_url($pdf_url); ?>">
               <p><strong><?php the_title(); ?></strong></p>
-
-              <iframe
-                src="<?php echo esc_url( get_template_directory_uri() . '/pdfjs/web/viewer.html?file=' . urlencode($pdf_url) ); ?>"
-                width="100%"
-                height="400"
-                style="border:none;"
-                loading="lazy">
-                <p>Votre navigateur ne supporte pas les iframes. <a href="<?php echo esc_url($pdf_url); ?>" target="_blank">Cliquez ici pour voir le PDF</a></p>
-              </iframe>
-
-              <p style="text-align: center; margin-top: 10px;">
-                <a href="<?php echo esc_url($pdf_url); ?>" target="_blank" class="pdf-link">
-                  📄 Ouvrir le PDF dans un nouvel onglet
+              <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title(); ?>" style="max-width:100%;" oncontextmenu="return false;">
+              <div class="menu-item-overlay">
+                <a href="<?php echo esc_url($pdf_url); ?>" target="_blank" class="view-pdf-btn">
+                  <span>📄</span> Voir le PDF
                 </a>
-              </p>
+              </div>
             </div>
           <?php endif;
-        endif;
+        }
       endwhile;
       wp_reset_postdata();
     endif;
 
-    // --- Customizer CORRIGÉ ---
-    $customizer_pdf_id = get_theme_mod('cotemer_menu_pdf'); // Maintenant c'est un ID
+    // --- Cartes multiples depuis le customizer (NOUVEAU SYSTÈME) ---
+    $menu_cards = cotemer_get_menu_cards();
+
+    if (!empty($menu_cards)) {
+      foreach ($menu_cards as $card) {
+        if (!empty($card['pdf_url'])) {
+          $image_url = convert_pdf_to_image($card['pdf_url']);
+
+          if ($image_url): ?>
+            <div class="menu-item" data-pdf="<?php echo esc_url($card['pdf_url']); ?>">
+              <p><strong><?php echo esc_html($card['title']); ?></strong></p>
+              <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($card['title']); ?>" style="max-width:100%;" oncontextmenu="return false;">
+              <div class="menu-item-overlay">
+                <a href="<?php echo esc_url($card['pdf_url']); ?>" target="_blank" class="view-pdf-btn">
+                  <span>📄</span> Voir le PDF
+                </a>
+              </div>
+            </div>
+          <?php endif;
+        }
+      }
+    }
+
+    // --- Ancien système customizer (pour compatibilité - OPTIONNEL) ---
+    // Tu peux garder cette partie pour la transition ou la supprimer si tu n'en as plus besoin
+    $customizer_pdf_id = get_theme_mod('cotemer_menu_pdf');
     $customizer_pdf_title = get_theme_mod('cotemer_menu_title');
 
-    if ($customizer_pdf_id):
+    // Seulement si il n'y a pas de cartes multiples configurées
+    if ($customizer_pdf_id && empty($menu_cards)) {
       $customizer_pdf_url = wp_get_attachment_url($customizer_pdf_id);
+      $image_url = convert_pdf_to_image($customizer_pdf_url);
 
-      if ($customizer_pdf_url):
-        ?>
-        <div class="menu-item">
+      if ($image_url): ?>
+        <div class="menu-item" data-pdf="<?php echo esc_url($customizer_pdf_url); ?>">
           <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
-
-          <iframe
-            src="<?php echo esc_url( get_template_directory_uri() . '/pdfjs/web/viewer.html?file=' . urlencode($customizer_pdf_url) ); ?>"
-            width="100%"
-            height="400"
-            style="border:none;"
-            loading="lazy">
-            <p>Votre navigateur ne supporte pas les iframes. <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank">Cliquez ici pour voir le PDF</a></p>
-          </iframe>
-
-          <p style="text-align: center; margin-top: 10px;">
-            <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank" class="pdf-link">
-              📄 Ouvrir le PDF dans un nouvel onglet
+          <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($customizer_pdf_title ?: 'Carte du restaurant'); ?>" style="max-width:100%;" oncontextmenu="return false;">
+          <div class="menu-item-overlay">
+            <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank" class="view-pdf-btn">
+              <span>📄</span> Voir le PDF
             </a>
-          </p>
+          </div>
         </div>
       <?php endif;
-    endif; ?>
+    }
+
+    // Message si aucune carte n'est disponible
+    if (!$menus->have_posts() && empty($menu_cards) && !$customizer_pdf_id): ?>
+      <div class="no-menu-message">
+        <p>Aucune carte n'est disponible pour le moment.</p>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
-
 
 
 <section id="gallery">
@@ -228,5 +280,41 @@
       </div>
 
     </section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const captionText = document.getElementById('caption');
+    const closeBtn = document.querySelector('.close-btn');
+
+    // Cibler toutes les images du menu
+    document.querySelectorAll('.menu-item img').forEach(img => {
+      img.addEventListener('click', () => {
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        captionText.textContent = img.alt || '';
+      });
+    });
+
+    // Fermer la modale au clic sur la croix
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Fermer la modale au clic en dehors de l'image
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // Fermer au clic sur la touche Échap
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        modal.style.display = 'none';
+      }
+    });
+  });
+</script>
 
 <?php get_footer(); ?>

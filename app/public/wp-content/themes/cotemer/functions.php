@@ -5,6 +5,28 @@ function cotemer_enqueue_styles() {
 }
 add_action('wp_enqueue_scripts', 'cotemer_enqueue_styles');
 
+// Charge le JS/CSS du control dans la Customizer (back-end)
+function cotemer_customize_controls_assets() {
+  // nécessaire pour wp.media()
+  wp_enqueue_media();
+
+  wp_enqueue_script(
+    'cotemer-menu-cards-customizer',
+    get_template_directory_uri() . '/assets/js/menu-cards-customizer.js',
+    array('jquery', 'customize-controls'),
+    '1.0.0',
+    true
+  );
+
+  wp_enqueue_style(
+    'cotemer-menu-cards-customizer-css',
+    get_template_directory_uri() . '/assets/css/menu-cards-customizer.css',
+    array(),
+    '1.0.0'
+  );
+}
+add_action('customize_controls_enqueue_scripts', 'cotemer_customize_controls_assets');
+
 // Fonction de nettoyage des données de galerie
 function cotemer_sanitize_gallery_images($input) {
     if (empty($input)) {
@@ -210,12 +232,12 @@ function cotemer_customize_register($wp_customize) {
     )));
 
     // Section Carte du restaurant
-    $wp_customize->add_section('cotemer_menu_section', array(
-        'title'    => __('Carte du restaurant', 'cotemer'),
-        'priority' => 32,
-    ));
+  $wp_customize->add_section('cotemer_menu_section', array(
+    'title'    => __('Carte du restaurant', 'cotemer'),
+    'priority' => 32,
+  ));
 
-    // Titre de la carte
+  // Titre de la carte
     $wp_customize->add_setting('cotemer_menu_title', array(
         'default'   => 'Notre carte',
         'sanitize_callback' => 'sanitize_text_field',
@@ -776,4 +798,362 @@ function debug_translatepress() {
 }
 add_action('wp_footer', 'debug_translatepress');
 */
+
+// Fonction pour ajouter la classe du contrôle personnalisé
+function cotemer_customize_register_controls() {
+    // Classe pour le contrôle des cartes multiples
+    class Cotemer_Menu_Cards_Control extends WP_Customize_Control {
+    public $type = 'menu_cards';
+
+    public function enqueue() {
+        wp_enqueue_script(
+            'cotemer-menu-cards-control',
+            get_template_directory_uri() . '/js/menu-cards-customizer.js',
+            array('jquery', 'customize-controls'),
+            '1.0.0',
+            true
+        );
+
+        wp_enqueue_style(
+            'cotemer-menu-cards-control',
+            get_template_directory_uri() . '/css/menu-cards-customizer.css',
+            array(),
+            '1.0.0'
+        );
+    }
+
+    public function render_content() {
+        ?>
+        <label>
+            <span class="customize-control-title"><?php echo esc_html($this->label); ?></span>
+            <?php if (!empty($this->description)) : ?>
+                <span class="description customize-control-description"><?php echo $this->description; ?></span>
+            <?php endif; ?>
+        </label>
+
+        <div class="menu-cards-control-container">
+            <div id="menu-cards-<?php echo esc_attr($this->id); ?>" class="menu-cards-container">
+                <!-- Les cartes seront ajoutées ici par JavaScript -->
+            </div>
+
+            <button type="button" class="button add-menu-card" data-control-id="<?php echo esc_attr($this->id); ?>">
+                Ajouter une carte
+            </button>
+
+            <input type="hidden" <?php $this->link(); ?> value="<?php echo esc_attr($this->value()); ?>">
+        </div>
+
+        <style>
+        .menu-cards-container {
+            margin: 10px 0;
+        }
+
+        .menu-card-item {
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        .menu-card-header {
+            background: #f9f9f9;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-card-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .menu-card-content {
+            padding: 15px;
+        }
+
+        .menu-card-field {
+            margin-bottom: 15px;
+        }
+
+        .menu-card-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .menu-card-field input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .menu-card-pdf-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pdf-preview {
+            flex: 1;
+            padding: 5px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .pdf-name {
+            color: #0073aa;
+        }
+
+        .no-pdf {
+            color: #666;
+            font-style: italic;
+        }
+
+        .menu-card-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .menu-card-actions .button {
+            font-size: 11px;
+            padding: 3px 8px;
+            height: auto;
+            line-height: 1.4;
+        }
+
+        .add-menu-card {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .remove-card {
+            font-size: 11px !important;
+            padding: 3px 8px !important;
+            height: auto !important;
+            line-height: 1.4 !important;
+        }
+        </style>
+        <?php
+    }
+    }
+}
+
+// Fonction pour ajouter les contrôles au customizer
+function cotemer_customize_register_menu_cards($wp_customize) {
+    // S'assurer que la classe est définie
+    if (!class_exists('Cotemer_Menu_Cards_Control')) {
+        cotemer_customize_register_controls();
+    }
+    // Section Cartes du restaurant
+    $wp_customize->add_section('cotemer_menu_cards_section', array(
+        'title'    => __('Cartes du restaurant', 'cotemer'),
+        'priority' => 32,
+    ));
+
+    // Titre de la section
+    $wp_customize->add_setting('cotemer_menu_cards_title', array(
+        'default'   => 'Nos cartes',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('cotemer_menu_cards_title', array(
+        'label'    => __('Titre de la section', 'cotemer'),
+        'section'  => 'cotemer_menu_cards_section',
+        'type'     => 'text',
+    ));
+
+    // Contrôle pour les cartes multiples
+    $wp_customize->add_setting('cotemer_menu_cards_data', array(
+        'default' => '[]',
+        'sanitize_callback' => 'cotemer_sanitize_menu_cards',
+    ));
+
+    $wp_customize->add_control(new Cotemer_Menu_Cards_Control($wp_customize, 'cotemer_menu_cards_data', array(
+        'label'    => __('Cartes du restaurant', 'cotemer'),
+        'description' => __('Ajoutez autant de cartes que nécessaire (carte des vins, menu du jour, etc.)', 'cotemer'),
+        'section'  => 'cotemer_menu_cards_section',
+    )));
+}
+add_action('customize_register', 'cotemer_customize_register_menu_cards');
+
+
+
+// Fonction de validation/nettoyage des données
+function cotemer_sanitize_menu_cards($input) {
+    $cards = json_decode($input, true);
+    if (!is_array($cards)) {
+        return '[]';
+    }
+
+    $sanitized_cards = array();
+    foreach ($cards as $card) {
+        if (is_array($card)) {
+            $sanitized_card = array(
+                'title' => sanitize_text_field($card['title'] ?? ''),
+                'pdf_url' => esc_url_raw($card['pdf_url'] ?? ''),
+                'pdf_id' => absint($card['pdf_id'] ?? 0),
+            );
+            $sanitized_cards[] = $sanitized_card;
+        }
+    }
+
+    return json_encode($sanitized_cards);
+}
+
+function autoriser_pdf($mimes) {
+  $mimes['pdf'] = 'application/pdf';
+  return $mimes;
+}
+add_filter('upload_mimes', 'autoriser_pdf');
+
+// Fonction helper pour récupérer les cartes
+function cotemer_get_menu_cards() {
+    $cards_data = get_theme_mod('cotemer_menu_cards_data', '[]');
+    $cards = json_decode($cards_data, true);
+    return is_array($cards) ? $cards : array();
+}
+
+// Fonction helper pour afficher les cartes (exemple d'utilisation)
+function cotemer_display_menu_cards() {
+    $title = get_theme_mod('cotemer_menu_cards_title', 'Nos cartes');
+    $cards = cotemer_get_menu_cards();
+
+    if (empty($cards)) {
+        return;
+    }
+    ?>
+    <section class="menu-cards-section">
+        <div class="container">
+            <h2><?php echo esc_html($title); ?></h2>
+            <div class="menu-cards-grid">
+                <?php foreach ($cards as $card) : ?>
+                    <?php if (!empty($card['pdf_url'])) : ?>
+                        <div class="menu-card">
+                            <h3><?php echo esc_html($card['title']); ?></h3>
+                            <a href="<?php echo esc_url($card['pdf_url']); ?>" target="_blank" class="menu-card-link">
+                                <span class="pdf-icon">📄</span>
+                                Consulter la carte
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php
+}
 ?>
+
+    <style>
+      .menu-cards-container {
+        margin: 10px 0;
+      }
+
+      .menu-card-item {
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        background: #fff;
+        border-radius: 4px;
+      }
+
+      .menu-card-header {
+        background: #f9f9f9;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .menu-card-header h4 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .menu-card-content {
+        padding: 15px;
+      }
+
+      .menu-card-field {
+        margin-bottom: 15px;
+      }
+
+      .menu-card-field label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        font-size: 12px;
+      }
+
+      .menu-card-field input[type="text"] {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+      }
+
+      .menu-card-pdf-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .pdf-preview {
+        flex: 1;
+        padding: 5px;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 12px;
+      }
+
+      .pdf-name {
+        color: #0073aa;
+      }
+
+      .no-pdf {
+        color: #666;
+        font-style: italic;
+      }
+
+      .menu-card-actions {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+
+      .menu-card-actions .button {
+        font-size: 11px;
+        padding: 3px 8px;
+        height: auto;
+        line-height: 1.4;
+      }
+
+      .add-menu-card {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      .remove-card {
+        font-size: 11px !important;
+        padding: 3px 8px !important;
+        height: auto !important;
+        line-height: 1.4 !important;
+      }
+    </style>
+
