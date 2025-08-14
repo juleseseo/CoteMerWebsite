@@ -36,6 +36,7 @@
         overflow: hidden;
         animation: fadeOutIntro 1s ease forwards;
         animation-delay: 5s;
+        padding: 20px;
     }
 
     /* Conteneur d'images */
@@ -45,18 +46,21 @@
         overflow: hidden;
     }
 
-    /* Images flottantes */
+    /* Images flottantes - Desktop */
     .intro-images img {
         position: absolute;
         opacity: 0;
         transform: scale(0.5) rotate(0deg);
         animation: showImage 3s ease-in-out forwards;
+        max-width: none;
+        height: auto;
     }
 
-    /* Logo centré et plus grand */
+    /* Logo centré et plus grand - Desktop */
     .intro-images img.logo {
         position: relative;
         width: 180px;
+        max-width: 90vw;
         transform: none;
         opacity: 1;
         animation: popIn 1.5s ease forwards;
@@ -64,16 +68,119 @@
         z-index: 10;
     }
 
-    /* Texte de bienvenue */
+    /* Texte de bienvenue - Desktop */
     .intro-text {
         color: white;
-        font-size: 2.5rem;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
         font-family: 'Playfair Display', serif;
         text-align: center;
         margin-top: 20px;
         opacity: 0;
         animation: fadeInText 1.5s ease forwards;
         animation-delay: 3s;
+        padding: 0 20px;
+        max-width: 90vw;
+        line-height: 1.2;
+    }
+
+    /* Tablettes (768px et moins) */
+    @media (max-width: 768px) {
+        #intro {
+            padding: 15px;
+        }
+
+        .intro-images img.logo {
+            width: 140px;
+            max-width: 80vw;
+        }
+
+        .intro-text {
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            margin-top: 15px;
+            padding: 0 15px;
+        }
+    }
+
+    /* Mobiles (480px et moins) */
+    @media (max-width: 480px) {
+        #intro {
+            padding: 10px;
+        }
+
+        .intro-images img.logo {
+            width: 120px;
+            max-width: 75vw;
+        }
+
+        .intro-text {
+            font-size: clamp(1rem, 6vw, 1.5rem);
+            margin-top: 10px;
+            padding: 0 10px;
+            line-height: 1.1;
+        }
+
+        /* Réduction de la durée d'animation sur mobile */
+        #intro {
+            animation-delay: 4s;
+        }
+
+        .intro-images img {
+            animation-duration: 2.5s;
+        }
+
+        .intro-images img.logo {
+            animation-duration: 1.2s;
+            animation-delay: 1.5s;
+        }
+
+        .intro-text {
+            animation-delay: 2.5s;
+            animation-duration: 1.2s;
+        }
+    }
+
+    /* Très petits écrans (320px et moins) */
+    @media (max-width: 320px) {
+        .intro-images img.logo {
+            width: 100px;
+        }
+
+        .intro-text {
+            font-size: clamp(0.9rem, 7vw, 1.2rem);
+        }
+    }
+
+    /* Écrans très larges (1200px et plus) */
+    @media (min-width: 1200px) {
+        .intro-images img.logo {
+            width: 220px;
+        }
+
+        .intro-text {
+            font-size: 3rem;
+        }
+    }
+
+    /* Préférence pour les animations réduites */
+    @media (prefers-reduced-motion: reduce) {
+        #intro {
+            animation-duration: 0.3s;
+            animation-delay: 2s;
+        }
+
+        .intro-images img {
+            animation-duration: 1s;
+        }
+
+        .intro-images img.logo {
+            animation-duration: 0.5s;
+            animation-delay: 0.5s;
+        }
+
+        .intro-text {
+            animation-duration: 0.5s;
+            animation-delay: 1s;
+        }
     }
 
     /* Apparition des images */
@@ -105,23 +212,52 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const images = document.querySelectorAll(".intro-images img:not(.logo)");
+        const isMobile = window.innerWidth <= 480;
+        const isTablet = window.innerWidth <= 768;
 
         images.forEach((img, index) => {
-            // Position aléatoire
-            img.style.top = `${Math.random() * 80}%`;
-            img.style.left = `${Math.random() * 80}%`;
+            // Position aléatoire adaptée à la taille d'écran
+            const marginTop = isMobile ? 10 : isTablet ? 15 : 20;
+            const marginSide = isMobile ? 5 : isTablet ? 10 : 15;
 
-            // Taille aléatoire
-            const size = Math.random() * 100 + 100; // entre 100px et 200px
-            img.style.width = `${size}px`;
+            img.style.top = `${Math.random() * (100 - marginTop * 2) + marginTop}%`;
+            img.style.left = `${Math.random() * (100 - marginSide * 2) + marginSide}%`;
 
-            // Délai d'apparition
-            img.style.animationDelay = `${index * 0.4}s`;
+            // Taille adaptée à l'écran
+            let minSize, maxSize;
+            if (isMobile) {
+                minSize = 12; maxSize = 20; // Plus grandes sur mobile
+            } else if (isTablet) {
+                minSize = 10; maxSize = 18;
+            } else {
+                minSize = 8; maxSize = 15; // Tailles originales sur desktop
+            }
+
+            const sizeVW = Math.random() * (maxSize - minSize) + minSize;
+            img.style.width = `${sizeVW}vw`;
+            img.style.height = 'auto';
+
+            // Délai d'apparition adapté
+            const baseDelay = isMobile ? 0.3 : 0.4;
+            img.style.animationDelay = `${index * baseDelay}s`;
         });
 
-        // Supprimer le DOM après l'animation pour alléger
+        // Supprimer le DOM après l'animation
+        const totalDuration = isMobile ? 5000 : 6000;
         setTimeout(() => {
-            document.getElementById("intro").remove();
-        }, 6000);
+            document.getElementById("intro")?.remove();
+        }, totalDuration);
+    });
+
+    // Gestion du redimensionnement de fenêtre
+    window.addEventListener('resize', () => {
+        // Recalcul uniquement si le changement est significatif
+        const intro = document.getElementById("intro");
+        if (intro) {
+            clearTimeout(window.resizeTimeout);
+            window.resizeTimeout = setTimeout(() => {
+                location.reload(); // Rechargement simple pour éviter les bugs d'animation
+            }, 150);
+        }
     });
 </script>

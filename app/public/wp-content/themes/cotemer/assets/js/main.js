@@ -93,219 +93,100 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    const menuItems = document.querySelectorAll('.menu-item');
+// JavaScript pour le modal du menu
+document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('imageModal');
-    const modalImage = document.getElementById('modalImage');
-    const imageCaption = document.getElementById('imageCaption');
-    const closeBtn = document.querySelector('#imageModal .close-btn');
+    const modalImg = document.getElementById('modalImage');
+    const caption = document.getElementById('imageCaption');
+    const closeBtn = document.querySelector('.close-btn');
+    const menuItems = document.querySelectorAll('.menu-item');
 
-    // Fonction pour fermer la modale
+    // Fonction pour ouvrir le modal
+    function openModal(imageSrc, imageTitle) {
+        modal.style.display = 'block';
+        modalImg.src = imageSrc;
+        caption.textContent = imageTitle;
+
+        // Animation d'entrée
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+
+        // Désactiver le scroll de la page
+        document.body.style.overflow = 'hidden';
+
+        // Focus sur le bouton de fermeture pour l'accessibilité
+        closeBtn.focus();
+    }
+
+    // Fonction pour fermer le modal
     function closeModal() {
-        if (modal) {
+        modal.classList.remove('show');
+
+        setTimeout(() => {
             modal.style.display = 'none';
-            modalImage.src = '';
-            imageCaption.textContent = '';
-            document.body.style.overflow = ''; // Restaurer le scroll
-        }
+            // Réactiver le scroll de la page
+            document.body.style.overflow = '';
+        }, 300);
     }
 
-    // Fonction pour ouvrir la modale avec l'image
-    function openModal(imageUrl, title) {
-        if (modal && modalImage) {
-            // Précharger l'image
-            const img = new Image();
-
-            // Afficher un loading pendant le chargement
-            modalImage.style.opacity = '0';
-            imageCaption.innerHTML = '<div class="loading-text">Chargement...</div>';
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Empêcher le scroll de la page
-
-            img.onload = function() {
-                modalImage.src = imageUrl;
-                modalImage.alt = title;
-                imageCaption.innerHTML = `<h3>${title}</h3>`;
-                modalImage.style.opacity = '1';
-
-                // Animation d'apparition
-                modalImage.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    modalImage.style.transform = 'scale(1)';
-                }, 50);
-            };
-
-            img.onerror = function() {
-                imageCaption.innerHTML = `
-                    <div class="error-message">
-                        <h3>${title}</h3>
-                        <p>Erreur lors du chargement de l'image</p>
-                    </div>
-                `;
-                modalImage.style.opacity = '1';
-            };
-
-            img.src = imageUrl;
-        }
-    }
-
-    // Gestionnaire d'événements pour les éléments du menu
+    // Ajouter les événements de clic sur chaque élément du menu
     menuItems.forEach(item => {
-        // Ajouter des effets de survol
-        item.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px) scale(1.02)';
+        item.addEventListener('click', function() {
+            const imageSrc = this.dataset.image;
+            const imageTitle = this.dataset.title;
+            openModal(imageSrc, imageTitle);
         });
 
-        item.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-
-        // Gestionnaire de clic
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const imageUrl = this.getAttribute('data-image');
-            const title = this.getAttribute('data-title') || 'Menu';
-
-            if (imageUrl) {
-                // Animation de clic
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                    openModal(imageUrl, title);
-                }, 100);
-            }
-        });
-
-        // Accessibilité : permettre l'ouverture avec Entrée ou Espace
+        // Support du clavier pour l'accessibilité
         item.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                this.click();
+                const imageSrc = this.dataset.image;
+                const imageTitle = this.dataset.title;
+                openModal(imageSrc, imageTitle);
             }
         });
 
-        // Rendre les éléments focusables et accessibles
+        // Rendre les éléments focusables
         item.setAttribute('tabindex', '0');
         item.setAttribute('role', 'button');
-        item.setAttribute('aria-label', `Agrandir ${item.getAttribute('data-title') || 'l\'image du menu'}`);
+        item.setAttribute('aria-label', 'Voir l\'image en grand : ' + item.dataset.title);
     });
 
-    // Fermer la modale avec le bouton de fermeture
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
+    // Fermer le modal en cliquant sur le bouton de fermeture
+    closeBtn.addEventListener('click', closeModal);
 
-    // Fermer la modale en cliquant à l'extérieur de l'image
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this || e.target.classList.contains('image-modal-body')) {
-                closeModal();
-            }
-        });
-    }
-
-    // Fermer la modale avec Échap
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+    // Fermer le modal en cliquant en dehors de l'image
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
             closeModal();
         }
     });
 
-    // Navigation avec les flèches (optionnel - pour naviguer entre les images)
+    // Fermer le modal avec la touche Échap
     document.addEventListener('keydown', function(e) {
-        if (modal && modal.style.display === 'block') {
-            const currentImage = modalImage.src;
-            const menuItemsArray = Array.from(menuItems);
-            const currentIndex = menuItemsArray.findIndex(item =>
-                item.getAttribute('data-image') === currentImage
-            );
-
-            if (e.key === 'ArrowRight' && currentIndex < menuItemsArray.length - 1) {
-                const nextItem = menuItemsArray[currentIndex + 1];
-                const nextImageUrl = nextItem.getAttribute('data-image');
-                const nextTitle = nextItem.getAttribute('data-title');
-                if (nextImageUrl) {
-                    openModal(nextImageUrl, nextTitle);
-                }
-            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                const prevItem = menuItemsArray[currentIndex - 1];
-                const prevImageUrl = prevItem.getAttribute('data-image');
-                const prevTitle = prevItem.getAttribute('data-title');
-                if (prevImageUrl) {
-                    openModal(prevImageUrl, prevTitle);
-                }
-            }
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            closeModal();
         }
     });
 
-    // Zoom sur l'image avec la molette (optionnel)
-    if (modalImage) {
-        let scale = 1;
-        const maxScale = 3;
-        const minScale = 0.5;
+    // Empêcher la fermeture lors du clic sur l'image
+    modalImg.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 
-        modalImage.addEventListener('wheel', function(e) {
-            if (modal.style.display === 'block') {
-                e.preventDefault();
+    // Empêcher la fermeture lors du clic sur la caption
+    caption.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 
-                const delta = e.deltaY > 0 ? -0.1 : 0.1;
-                scale += delta;
-                scale = Math.max(minScale, Math.min(maxScale, scale));
-
-                this.style.transform = `scale(${scale})`;
-
-                // Réinitialiser le zoom si on double-clique
-                this.addEventListener('dblclick', function() {
-                    scale = 1;
-                    this.style.transform = 'scale(1)';
-                });
-            }
-        });
-    }
-
-    // Support pour les gestes tactiles (pincement pour zoomer) sur mobile
-    if (modalImage && 'ontouchstart' in window) {
-        let initialDistance = 0;
-        let scale = 1;
-
-        modalImage.addEventListener('touchstart', function(e) {
-            if (e.touches.length === 2) {
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-                initialDistance = Math.sqrt(
-                    Math.pow(touch2.clientX - touch1.clientX, 2) +
-                    Math.pow(touch2.clientY - touch1.clientY, 2)
-                );
-            }
-        });
-
-        modalImage.addEventListener('touchmove', function(e) {
-            if (e.touches.length === 2 && modal.style.display === 'block') {
-                e.preventDefault();
-
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-                const currentDistance = Math.sqrt(
-                    Math.pow(touch2.clientX - touch1.clientX, 2) +
-                    Math.pow(touch2.clientY - touch1.clientY, 2)
-                );
-
-                if (initialDistance > 0) {
-                    const scaleChange = currentDistance / initialDistance;
-                    scale = Math.max(0.5, Math.min(3, scaleChange));
-                    this.style.transform = `scale(${scale})`;
-                }
-            }
-        });
-    }
-
-    // Amélioration de l'accessibilité : annonce du nombre d'éléments
-    const menuCount = menuItems.length;
-    if (menuCount > 0) {
-        const menuSection = document.getElementById('menu');
-        if (menuSection) {
-            menuSection.setAttribute('aria-label', `Section menu avec ${menuCount} carte${menuCount > 1 ? 's' : ''}`);
+    // Gestion du redimensionnement de la fenêtre
+    window.addEventListener('resize', function() {
+        if (modal.style.display === 'block') {
+            // Réajuster la position si nécessaire
+            modalImg.style.maxWidth = '90%';
+            modalImg.style.maxHeight = '80%';
         }
-    }
+    });
 });
