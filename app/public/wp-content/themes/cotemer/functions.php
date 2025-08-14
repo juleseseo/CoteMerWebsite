@@ -215,7 +215,7 @@ function cotemer_customize_register($wp_customize) {
         'priority' => 32,
     ));
 
-    // Titre de la carte
+// Titre de la carte
     $wp_customize->add_setting('cotemer_menu_title', array(
         'default'   => 'Notre carte',
         'sanitize_callback' => 'sanitize_text_field',
@@ -226,16 +226,34 @@ function cotemer_customize_register($wp_customize) {
         'type'     => 'text',
     ));
 
-  $wp_customize->add_setting('cotemer_menu_pdf', array(
-    'default' => '',
-    'sanitize_callback' => 'absint', // Valide que c'est un entier (ID)
-  ));
-  $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'cotemer_menu_pdf', array(
-    'label'    => __('Fichier PDF de la carte', 'cotemer'),
-    'section'  => 'cotemer_menu_section',
-    'mime_type' => 'application/pdf', // Limite aux PDFs seulement
-  )));
+// Nombre maximum de cartes à gérer via customizer
+    $max_menu_cards = 5;
 
+    for ($i = 1; $i <= $max_menu_cards; $i++) {
+        // Titre de la carte
+        $wp_customize->add_setting("cotemer_menu_card_{$i}_title", array(
+            'default' => $i == 1 ? 'Carte principale' : "Carte {$i}",
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+        $wp_customize->add_control("cotemer_menu_card_{$i}_title", array(
+            'label'    => sprintf(__('Titre de la carte %d', 'cotemer'), $i),
+            'section'  => 'cotemer_menu_section',
+            'type'     => 'text',
+        ));
+
+        // Image de la carte (aperçu)
+        $wp_customize->add_setting("cotemer_menu_card_{$i}_image", array(
+            'default' => '',
+            'sanitize_callback' => 'absint',
+        ));
+        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, "cotemer_menu_card_{$i}_image", array(
+            'label'    => sprintf(__('Image d\'aperçu de la carte %d', 'cotemer'), $i),
+            'section'  => 'cotemer_menu_section',
+            'mime_type' => 'image',
+            'description' => __('Image qui sera affichée comme aperçu de la carte', 'cotemer'),
+        )));
+
+    }
   // Section galerie
     $wp_customize->add_section('cotemer_gallery_section', array(
         'title'    => __('Galerie photos', 'cotemer'),

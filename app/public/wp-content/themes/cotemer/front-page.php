@@ -58,84 +58,79 @@
   </div>
 </section>
 
+
 <section id="menu">
-  <h2>Notre carte</h2>
-  <div class="menu-grid">
+    <!-- Modale pour afficher l'image en grand -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImage" alt="Image agrandie">
+        <div id="imageCaption"></div>
+    </div>
+
     <?php
-    // --- CPT restaurant_menu ---
-    $args = array(
-      'post_type'      => 'restaurant_menu',
-      'posts_per_page' => -1,
-      'orderby'        => 'title',
-      'order'          => 'ASC',
-    );
-    $menus = new WP_Query($args);
+    // Titre depuis le customizer
+    $menu_title = get_theme_mod('cotemer_menu_title', 'Notre carte');
+    ?>
+    <h2><?php echo esc_html($menu_title); ?></h2>
 
-    if ($menus->have_posts()):
-      while ($menus->have_posts()): $menus->the_post();
-        $pdf_url = get_post_meta(get_the_ID(), '_cotemer_menu_file', true);
+    <div class="menu-grid">
 
-        if ($pdf_url):
-          // Si c'est un ID, convertit en URL
-          if (is_numeric($pdf_url)) {
-            $pdf_url = wp_get_attachment_url($pdf_url);
-          }
+        <?php
+        $max_menu_cards = 5;
+        for ($i = 1; $i <= $max_menu_cards; $i++) {
+            $card_title = get_theme_mod("cotemer_menu_card_{$i}_title", '');
+            $card_image_id = get_theme_mod("cotemer_menu_card_{$i}_image", '');
 
-          if ($pdf_url): ?>
-            <div class="menu-item">
-              <p><strong><?php the_title(); ?></strong></p>
+            if ($card_title && $card_image_id) {
+                $image_url = wp_get_attachment_url($card_image_id);
+                if ($image_url): ?>
+                    <div class="menu-item"
+                        <?php echo 'TEST'; ?>
+                         data-image="<?php echo esc_url($image_url); ?>"
+                         data-title="<?php echo esc_attr($card_title); ?>">
+                        <p><strong><?php echo esc_html($card_title); ?></strong></p>
+                        <img src="<?php echo esc_url($image_url); ?>"
+                             alt="<?php echo esc_attr($card_title); ?>"
+                             style="max-width:100%;" oncontextmenu="return false;">
+                    </div>
+                <?php endif;
+            }
+        }
+        $args = array(
+            'post_type'      => 'restaurant_menu',
+            'posts_per_page' => -1,
+            'orderby'        => 'title',
+            'order'          => 'ASC',
+        );
+        $menus = new WP_Query($args);
 
-              <iframe
-                src="<?php echo esc_url( get_template_directory_uri() . '/pdfjs/web/viewer.html?file=' . urlencode($pdf_url) ); ?>"
-                width="100%"
-                height="400"
-                style="border:none;"
-                loading="lazy">
-                <p>Votre navigateur ne supporte pas les iframes. <a href="<?php echo esc_url($pdf_url); ?>" target="_blank">Cliquez ici pour voir le PDF</a></p>
-              </iframe>
+        if ($menus->have_posts()):
+            while ($menus->have_posts()): $menus->the_post();
+                $image_id = get_post_meta(get_the_ID(), '_cotemer_menu_image', true);
 
-              <p style="text-align: center; margin-top: 10px;">
-                <a href="<?php echo esc_url($pdf_url); ?>" target="_blank" class="pdf-link">
-                  📄 Ouvrir le PDF dans un nouvel onglet
-                </a>
-              </p>
-            </div>
-          <?php endif;
+                if ($image_id) {
+                    if (is_numeric($image_id)) {
+                        $image_url = wp_get_attachment_url($image_id);
+                    } else {
+                        $image_url = esc_url($image_id);
+                    }
+
+                    if ($image_url): ?>
+                        <div class="menu-item"
+                             data-image="<?php echo esc_url($image_url); ?>"
+                             data-title="<?php the_title_attribute(); ?>">
+                            <p><strong><?php the_title(); ?></strong></p>
+                            <img src="<?php echo esc_url($image_url); ?>"
+                                 alt="<?php the_title_attribute(); ?>"
+                                 style="max-width:100%;" oncontextmenu="return false;">
+                        </div>
+                    <?php endif;
+                }
+            endwhile;
+            wp_reset_postdata();
         endif;
-      endwhile;
-      wp_reset_postdata();
-    endif;
-
-    // --- Customizer CORRIGÉ ---
-    $customizer_pdf_id = get_theme_mod('cotemer_menu_pdf'); // Maintenant c'est un ID
-    $customizer_pdf_title = get_theme_mod('cotemer_menu_title');
-
-    if ($customizer_pdf_id):
-      $customizer_pdf_url = wp_get_attachment_url($customizer_pdf_id);
-
-      if ($customizer_pdf_url):
         ?>
-        <div class="menu-item">
-          <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
-
-          <iframe
-            src="<?php echo esc_url( get_template_directory_uri() . '/pdfjs/web/viewer.html?file=' . urlencode($customizer_pdf_url) ); ?>"
-            width="100%"
-            height="400"
-            style="border:none;"
-            loading="lazy">
-            <p>Votre navigateur ne supporte pas les iframes. <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank">Cliquez ici pour voir le PDF</a></p>
-          </iframe>
-
-          <p style="text-align: center; margin-top: 10px;">
-            <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank" class="pdf-link">
-              📄 Ouvrir le PDF dans un nouvel onglet
-            </a>
-          </p>
-        </div>
-      <?php endif;
-    endif; ?>
-  </div>
+    </div>
 </section>
 
 
