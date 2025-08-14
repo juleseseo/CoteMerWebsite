@@ -236,9 +236,9 @@ function cotemer_customize_register($wp_customize) {
             'sanitize_callback' => 'sanitize_text_field',
         ));
         $wp_customize->add_control("cotemer_menu_card_{$i}_title", array(
-            'label'    => sprintf(__('Titre de la carte %d', 'cotemer'), $i),
-            'section'  => 'cotemer_menu_section',
-            'type'     => 'text',
+            'label' => sprintf(__('Titre de la carte %d', 'cotemer'), $i),
+            'section' => 'cotemer_menu_section',
+            'type' => 'text',
         ));
 
         // Image de la carte (aperçu)
@@ -247,11 +247,12 @@ function cotemer_customize_register($wp_customize) {
             'sanitize_callback' => 'absint',
         ));
         $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, "cotemer_menu_card_{$i}_image", array(
-            'label'    => sprintf(__('Image d\'aperçu de la carte %d', 'cotemer'), $i),
-            'section'  => 'cotemer_menu_section',
+            'label' => sprintf(__('Image d\'aperçu de la carte %d', 'cotemer'), $i),
+            'section' => 'cotemer_menu_section',
             'mime_type' => 'image',
             'description' => __('Image qui sera affichée comme aperçu de la carte', 'cotemer'),
         )));
+    }
 
   // Section galerie
     $wp_customize->add_section('cotemer_gallery_section', array(
@@ -775,22 +776,6 @@ function hide_default_translatepress_switcher() {
 }
 add_filter('trp_ls_shortcode_show_disabled_language', 'hide_default_translatepress_switcher');
 
-// Debug TranslatePress (décommentez pour debug)
-/*
-function debug_translatepress() {
-    if (!is_admin() && class_exists('TRP_Translate_Press') && current_user_can('administrator')) {
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_settings = $trp->get_component('settings')->get_settings();
-        $current_language = $trp->get_component('languages')->get_current_language();
 
-        echo '<div style="position: fixed; top: 10px; right: 10px; background: #333; color: #fff; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 9999; max-width: 300px;">';
-        echo '<strong>TranslatePress Debug:</strong><br>';
-        echo 'Langue courante: ' . $current_language . '<br>';
-        echo 'Langues publiées: ' . implode(', ', $trp_settings['publish-languages']) . '<br>';
-        echo 'URL courante: ' . $_SERVER['REQUEST_URI'] . '<br>';
-        echo '</div>';
-    }
-}
-add_action('wp_footer', 'debug_translatepress');
-*/
+
 ?>
