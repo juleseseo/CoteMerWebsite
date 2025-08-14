@@ -259,6 +259,8 @@ section h2::after {
   background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
   padding-top: 50px;
   overflow: auto;
+  justify-items: center;
+
 }
 
 /* Contenu de la modale */
