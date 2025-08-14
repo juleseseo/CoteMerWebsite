@@ -350,18 +350,20 @@ section {
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     margin-bottom: 40px;
     padding: 40px 0;
+    display: flex;
+    justify-content: center; /* centre horizontalement */
+    /*align-items: center;     !* centre verticalement *!*/
+    /*height: 100vh;*/
 }
 
 .carousel-wrapper {
     position: relative;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    margin: 0 auto;
     border-radius: 15px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     background: #f9f9f9;
     max-width: 600px;
+    width: 100%;
 }
 
 .carousel {
