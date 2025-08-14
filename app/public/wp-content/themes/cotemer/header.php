@@ -27,7 +27,7 @@
         <!-- Navigation -->
         <nav class="main-nav" id="main-nav">
             <ul class="nav-list">
-                <li><a href="#accueil"><?php _e('Accueil', 'ton-theme'); ?></a></li>
+                <li><a href="#site-header"><?php _e('Accueil', 'ton-theme'); ?></a></li>
                 <li><a href="#menu">Menu</a></li>
                 <li><a href="#gallery">Galerie</a></li>
                 <li><a href="#about">À propos</a></li>

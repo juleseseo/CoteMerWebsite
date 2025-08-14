@@ -462,11 +462,11 @@ section {
 }
 
 .about-image {
-    flex: 0 0 40%;
-    min-height: 300px;
+    width: 400px;
+    min-height: 500px;
     background-size: cover;
-    background-position: center;
     position: relative;
+    background-position: center center;
 }
 
 .about-image::before {
@@ -505,11 +505,26 @@ section {
     margin-bottom: 40px;
     padding: 40px 0;
 }
+/* ========== ABOUT & CONTACT ========== */
+#about, #contact {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin: 0 0 40px 0;
+    padding: 40px;
+}
+
+.section-content {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.8;
+}
 
 .contact-content {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 30px;
+    /*gap: 30px;*/
 }
 
 .contact-details {
@@ -521,7 +536,8 @@ section {
 .contact-item {
     font-size: clamp(1rem, 2.5vw, 1.1rem);
     color: #555;
-    line-height: 1.8;
+    line-height: 1;
+    text-align: center;
 }
 
 .hover-link {
@@ -537,17 +553,7 @@ section {
     font-weight: bold;
 }
 
-.map-container {
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-}
 
-.map-container iframe {
-    width: 100%;
-    height: 350px;
-    border: 0;
-}
 
 /* ========== FOOTER ========== */
 footer {
