@@ -58,138 +58,81 @@
   </div>
 </section>
 
+
 <section id="menu">
-  <!-- Modale pour afficher l'image en grand -->
-  <div id="imageModal" class="modal">
-    <span class="close-btn">&times;</span>
-    <img class="modal-content" id="modalImage" alt="Image agrandie">
-    <div id="caption"></div>
-  </div>
+    <!-- Modale pour afficher l'image en grand -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImage" alt="Image agrandie">
+        <div id="imageCaption"></div>
+    </div>
 
-  <?php
-  // Récupérer le titre depuis le customizer (cartes multiples)
-  $menu_title = get_theme_mod('cotemer_menu_cards_title', 'Notre carte');
-  ?>
-  <h2><?php echo esc_html($menu_title); ?></h2>
-
-  <div class="menu-grid">
     <?php
-    // Fonction pour convertir un PDF en image
-    function convert_pdf_to_image($pdf_url) {
-      if (!$pdf_url) return false;
+    // Titre depuis le customizer
+    $menu_title = get_theme_mod('cotemer_menu_title', 'Notre carte');
+    ?>
+    <h2><?php echo esc_html($menu_title); ?></h2>
 
-      $upload_dir = wp_upload_dir();
-      $pdf_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $pdf_url);
-      $output_path = str_replace('.pdf', '.jpg', $pdf_path);
-      $output_url  = str_replace('.pdf', '.jpg', $pdf_url);
+    <div class="menu-grid">
 
-      // Si l'image n'existe pas déjà, on la crée
-      if (!file_exists($output_path)) {
-        try {
-          $imagick = new Imagick();
-          $imagick->setResolution(150, 150); // Qualité
-          $imagick->readImage($pdf_path . '[0]'); // Première page
-          $imagick->setImageFormat('jpg');
-          $imagick->writeImage($output_path);
-          $imagick->clear();
-          $imagick->destroy();
-        } catch (Exception $e) {
-          return false;
+        <?php
+        $max_menu_cards = 5;
+        for ($i = 1; $i <= $max_menu_cards; $i++) {
+            $card_title = get_theme_mod("cotemer_menu_card_{$i}_title", '');
+            $card_image_id = get_theme_mod("cotemer_menu_card_{$i}_image", '');
+
+            if ($card_title && $card_image_id) {
+                $image_url = wp_get_attachment_url($card_image_id);
+                if ($image_url): ?>
+                    <div class="menu-item"
+                        <?php echo 'TEST'; ?>
+                         data-image="<?php echo esc_url($image_url); ?>"
+                         data-title="<?php echo esc_attr($card_title); ?>">
+                        <p><strong><?php echo esc_html($card_title); ?></strong></p>
+                        <img src="<?php echo esc_url($image_url); ?>"
+                             alt="<?php echo esc_attr($card_title); ?>"
+                             style="max-width:100%;" oncontextmenu="return false;">
+                    </div>
+                <?php endif;
+            }
         }
-      }
-      return $output_url;
-    }
+        $args = array(
+            'post_type'      => 'restaurant_menu',
+            'posts_per_page' => -1,
+            'orderby'        => 'title',
+            'order'          => 'ASC',
+        );
+        $menus = new WP_Query($args);
 
-    // --- CPT restaurant_menu (garde ton système existant) ---
-    $args = array(
-      'post_type'      => 'restaurant_menu',
-      'posts_per_page' => -1,
-      'orderby'        => 'title',
-      'order'          => 'ASC',
-    );
-    $menus = new WP_Query($args);
+        if ($menus->have_posts()):
+            while ($menus->have_posts()): $menus->the_post();
+                $image_id = get_post_meta(get_the_ID(), '_cotemer_menu_image', true);
 
-    if ($menus->have_posts()):
-      while ($menus->have_posts()): $menus->the_post();
-        $pdf_url = get_post_meta(get_the_ID(), '_cotemer_menu_file', true);
+                if ($image_id) {
+                    if (is_numeric($image_id)) {
+                        $image_url = wp_get_attachment_url($image_id);
+                    } else {
+                        $image_url = esc_url($image_id);
+                    }
 
-        if ($pdf_url) {
-          if (is_numeric($pdf_url)) {
-            $pdf_url = wp_get_attachment_url($pdf_url);
-          }
-
-          $image_url = convert_pdf_to_image($pdf_url);
-
-          if ($image_url): ?>
-            <div class="menu-item" data-pdf="<?php echo esc_url($pdf_url); ?>">
-              <p><strong><?php the_title(); ?></strong></p>
-              <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title(); ?>" style="max-width:100%;" oncontextmenu="return false;">
-              <div class="menu-item-overlay">
-                <a href="<?php echo esc_url($pdf_url); ?>" target="_blank" class="view-pdf-btn">
-                  <span>📄</span> Voir le PDF
-                </a>
-              </div>
-            </div>
-          <?php endif;
-        }
-      endwhile;
-      wp_reset_postdata();
-    endif;
-
-    // --- Cartes multiples depuis le customizer (NOUVEAU SYSTÈME) ---
-    $menu_cards = cotemer_get_menu_cards();
-
-    if (!empty($menu_cards)) {
-      foreach ($menu_cards as $card) {
-        if (!empty($card['pdf_url'])) {
-          $image_url = convert_pdf_to_image($card['pdf_url']);
-
-          if ($image_url): ?>
-            <div class="menu-item" data-pdf="<?php echo esc_url($card['pdf_url']); ?>">
-              <p><strong><?php echo esc_html($card['title']); ?></strong></p>
-              <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($card['title']); ?>" style="max-width:100%;" oncontextmenu="return false;">
-              <div class="menu-item-overlay">
-                <a href="<?php echo esc_url($card['pdf_url']); ?>" target="_blank" class="view-pdf-btn">
-                  <span>📄</span> Voir le PDF
-                </a>
-              </div>
-            </div>
-          <?php endif;
-        }
-      }
-    }
-
-    // --- Ancien système customizer (pour compatibilité - OPTIONNEL) ---
-    // Tu peux garder cette partie pour la transition ou la supprimer si tu n'en as plus besoin
-    $customizer_pdf_id = get_theme_mod('cotemer_menu_pdf');
-    $customizer_pdf_title = get_theme_mod('cotemer_menu_title');
-
-    // Seulement si il n'y a pas de cartes multiples configurées
-    if ($customizer_pdf_id && empty($menu_cards)) {
-      $customizer_pdf_url = wp_get_attachment_url($customizer_pdf_id);
-      $image_url = convert_pdf_to_image($customizer_pdf_url);
-
-      if ($image_url): ?>
-        <div class="menu-item" data-pdf="<?php echo esc_url($customizer_pdf_url); ?>">
-          <p><strong><?php echo esc_html($customizer_pdf_title ?: 'Carte du restaurant'); ?></strong></p>
-          <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($customizer_pdf_title ?: 'Carte du restaurant'); ?>" style="max-width:100%;" oncontextmenu="return false;">
-          <div class="menu-item-overlay">
-            <a href="<?php echo esc_url($customizer_pdf_url); ?>" target="_blank" class="view-pdf-btn">
-              <span>📄</span> Voir le PDF
-            </a>
-          </div>
-        </div>
-      <?php endif;
-    }
-
-    // Message si aucune carte n'est disponible
-    if (!$menus->have_posts() && empty($menu_cards) && !$customizer_pdf_id): ?>
-      <div class="no-menu-message">
-        <p>Aucune carte n'est disponible pour le moment.</p>
-      </div>
-    <?php endif; ?>
-  </div>
+                    if ($image_url): ?>
+                        <div class="menu-item"
+                             data-image="<?php echo esc_url($image_url); ?>"
+                             data-title="<?php the_title_attribute(); ?>">
+                            <p><strong><?php the_title(); ?></strong></p>
+                            <img src="<?php echo esc_url($image_url); ?>"
+                                 alt="<?php the_title_attribute(); ?>"
+                                 style="max-width:100%;" oncontextmenu="return false;">
+                        </div>
+                    <?php endif;
+                }
+            endwhile;
+            wp_reset_postdata();
+        endif;
+        ?>
+    </div>
 </section>
+
 
 
 <section id="gallery">
@@ -280,41 +223,5 @@
       </div>
 
     </section>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    const captionText = document.getElementById('caption');
-    const closeBtn = document.querySelector('.close-btn');
-
-    // Cibler toutes les images du menu
-    document.querySelectorAll('.menu-item img').forEach(img => {
-      img.addEventListener('click', () => {
-        modal.style.display = 'block';
-        modalImg.src = img.src;
-        captionText.textContent = img.alt || '';
-      });
-    });
-
-    // Fermer la modale au clic sur la croix
-    closeBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-
-    // Fermer la modale au clic en dehors de l'image
-    modal.addEventListener('click', e => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
-
-    // Fermer au clic sur la touche Échap
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        modal.style.display = 'none';
-      }
-    });
-  });
-</script>
 
 <?php get_footer(); ?>
